@@ -6,7 +6,8 @@ use App\Http\Controllers\ProductController;
 use App\Http\Controllers\HomeController;
 use App\Http\Controllers\AdminController;
 use App\Http\Controllers\UserController;
-
+// use App\Http\Controllers\FollowedAircraftController;
+use App\Http\Controllers\FlightController;
 /*
 |--------------------------------------------------------------------------
 | Web Routes
@@ -52,3 +53,9 @@ Route::middleware(['auth', 'user-access:admin'])->group(function () {
     Route::put('/admin/products/edit/{id}', [ProductController::class, 'update'])->name('admin/products/update');
     Route::delete('/admin/products/destroy/{id}', [ProductController::class, 'destroy'])->name('admin/products/destroy');
 });
+
+// Route::post('/follow-aircraft', [FollowedAircraftController::class, 'store'])->name('follow-aircraft');
+
+
+
+Route::post('/follow-aircraft', [FlightController::class, 'store'])->name('follow-aircraft');

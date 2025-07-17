@@ -10,41 +10,48 @@
             <!-- popup info pesawat -->
             <div class="left-popup-menu" id="leftPopupMenuP">
                 <div class="popup-pesawat-header">
-                    <div>
-                        <button class="close-btn" onclick="toggleLeftPopupMenuP()">&times;</button>
-                    </div>
+                    <h4>Aircraft Informasion</h4>
+
+                    <button class="close-btn" onclick="toggleLeftPopupMenuP()">&times;</button>
+
                 </div>
                 <div class="popup-content-pesawat" id="popupContentP"></div>
                 <button class="follow-btn" id="followButton" onclick="followAircraft()">Follow</button>
             </div>
-            <div class="right-popup-menu" id="rightPopupMenu">
+
+            {{-- pop-up follow --}}
+            <div class="right-popup-menu" id="rightPopupMenu" style="display: none;">
                 <div class="popup-follow-header">
-                    <h4>Di-follow</h4>
+                    <h4>Follow Aircraft</h4>
+
                     <button class="close-btn" onclick="toggleRightPopupMenu()">&times;</button>
                 </div>
-                <div class="popup-content-follow" id="popupContentFollow"></div>
-                <!-- Tombol reset di popup kanan -->
+                <div class="popup-content-follow" id="popupContentFollow">
+                </div>
+                <template id="followTemplate">
+                    <div class="follow-item">
+                        <div><strong>Callsign:</strong> <span class="follow-callsign"></span></div>
+                        <div><strong>Registration:</strong> <span class="follow-registration"></span></div>
+                        <div><strong>ICAO 24-bit:</strong> <span class="follow-icao"></span></div>
+                        <div><strong>Latitude:</strong> <span class="follow-lat"></span></div>
+                        <div><strong>Longitude:</strong> <span class="follow-lng"></span></div>
+                    </div>
+                </template>
+
+
+                <button class="save-follow" id="saveFollowedBtn" style="margin-top: 10px;">Simpan ke Database</button>
                 <button class="reset-follow-btn" onclick="resetFollowedAircrafts()">Reset</button>
 
             </div>
+
         </div>
-        <!-- Tombol buka popup kanan -->
-        <button class="open-follow-list" onclick="toggleRightPopupMenu()"
-            style="position: absolute; top: 10px; right: 10px; z-index: 3000;">Lihat Daftar Follow</button>
-
-
-
-
     </div>
 
-
-
-
     <!-- Map mode button -->
-    {{-- <div id="mapModeBtn" class="leaflet-bar leaflet-control leaflet-control-custom"
+    <div id="mapModeBtn" class="leaflet-bar leaflet-control leaflet-control-custom"
         style="bottom: 50px; left: 10px; position: absolute; z-index: 1000;">
         <img src="{{ asset('home/assets/images/layers.png') }}" style="width: 30px; height: 30px;" alt="Map Mode">
-    </div> --}}
+    </div>
 
     <!-- Map mode menu -->
     <div id="mapModeMenu"

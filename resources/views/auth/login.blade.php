@@ -16,8 +16,9 @@
         background-blend-mode: darken;
         background-size: cover;
         background-position: center;">
-        <div
-            class="w-full max-w-sm bg-black bg-opacity-10 backdrop-blur-md rounded-lg shadow-lg p-8 border border-gray-500">
+        {{-- <div
+            class="w-full max-w-sm bg-black bg-opacity-10 backdrop-blur-md rounded-lg shadow-lg p-8 border border-gray-500"> --}}
+        <div class="w-full max-w-sm bg-trasparent backdrop-blur-md rounded-lg shadow-lg p-8">
             <h1 class="text-4xl font-bold text-white mb-2 text-center">Sign In</h1>
             <p class="text-gray-300 text-center mb-6 text-sm">For your protection, please verify your identity.</p>
             <form class="space-y-4" method="post" action="{{ route('login.action') }}">

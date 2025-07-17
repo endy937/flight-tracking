@@ -43,20 +43,53 @@ html {
     left: -320px;
     width: 250px;
     height: 400px;
-    background-color: rgba(0, 0, 0, 0.5);
+    background-color: transparent;
     box-shadow: 2px 0 5px rgba(0, 0, 0, 0.5);
     z-index: 2000;
-    transition: left 0.3s ease, border-radius 0.3s ease;
+    transition: all 0.3s ease;
     padding: 10px;
-    border-radius: 6px;
+    border-radius: 2px;
     flex-direction: column;
     display: flex;
-    color: white;
+    color: #e0e0e0;
     margin-top: 30px;
+    border: solid 1px;
+    border-color: #dfdcdc69;
 }
 
 .left-popup-menu.active {
     left: 10px;
+}
+
+.popup-pesawat-header {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    margin-bottom: 10px;
+}
+
+.popup-pesawat-header h4 {
+    margin: 0;
+    color: #ffffff;
+    font-weight: 600;
+    font-size: 15px;
+}
+
+.popup-pesawat-header .close-btn {
+    font-size: 18px;
+    padding: 0 8px;
+    position: absolute;
+    top: 7px;
+    right: 10px;
+    cursor: pointer;
+    background: none;
+    border: none;
+    color: #fff;
+    transition: color 0.3s;
+}
+
+.popup-pesawat-header .close-btn:hover {
+    color: #ff0000;
 }
 
 .flight-icon {
@@ -83,7 +116,7 @@ html {
     color: white;
     background: rgba(0, 0, 0, 0.5);
     padding: 5px 10px;
-    border-radius: 4px;
+    border-radius: 2px;
     font-size: 12px;
 }
 
@@ -133,7 +166,7 @@ html {
 .search-container {
     position: absolute;
     top: 15px;
-    left: 15px;
+    left: 10px;
     width: 250px;
     z-index: 1100;
     backdrop-filter: blur(2px);
@@ -147,10 +180,10 @@ html {
 .search-container #search-input {
     width: 100%;
     background-color: rgba(255, 255, 255, 0);
-    border: 1px solid #fff;
+    border: 1px solid #dfdcdc69;
     color: #fff;
     padding: 0.4rem 0.7rem;
-    border-radius: 4px;
+    border-radius: 2px;
     transition: background-color 0.3s ease, border 0.3s ease;
     height: 20px;
     margin-top: 4px;
@@ -169,7 +202,7 @@ html {
 
 .navbar .dropdown-menu {
     background-color: transparent;
-    border-radius: 3px;
+    border-radius: 2px;
     box-shadow: 0 5px 15px rgba(0, 0, 0, 0.2);
     overflow: hidden;
     min-width: 180px;
@@ -224,57 +257,119 @@ html {
 
 .right-popup-menu {
     position: fixed;
-    top: 50px;
-    width: 300px;
-    background: white;
-    border: 1px solid #ddd;
-    box-shadow: 0 0 10px rgba(0, 0, 0, 0.2);
+    top: 70px;
+    right: 10px;
+    width: 260px;
+    background: transparent; /* abu kehitaman, transparan */
+    color: #e0e0e0; /* abu terang */
+    border-radius: 2px;
+    padding: 10px;
     z-index: 1000;
-    padding: 15px;
+    transition: all 0.3s ease;
+    display: none; /* default hidden */
+    border: solid 1px;
+    border-color: #dfdcdc69;
 }
 
-.right-popup-menu {
-    right: 20px;
-}
-
-.popup-pesawat-header,
 .popup-follow-header {
     display: flex;
     justify-content: space-between;
     align-items: center;
+    margin-bottom: 10px;
 }
 
-.close-btn {
+.popup-follow-header h4 {
+    margin: 0;
+    color: #ffffff;
+    font-weight: 600;
+    font-size: 15px;
+}
+
+.reset-follow-btn {
+    background-color: rgba(255, 255, 255, 0.05);
+    border: 1px solid rgba(255, 255, 255, 0.2);
+    color: #fff;
+    padding: 4px 8px;
+    border-radius: 2px;
+    cursor: pointer;
+    font-size: 10px;
+    transition: all 0.3s ease;
+    margin-right: 20px;
+}
+
+.reset-follow-btn:hover {
+    background-color: rgba(220, 4, 4, 0.619);
+}
+
+.save-follow {
+    background-color: rgba(255, 255, 255, 0.05);
+    border: 1px solid rgba(255, 255, 255, 0.2);
+    color: #fff;
+    padding: 4px 8px;
+    border-radius: 2px;
+    cursor: pointer;
+    font-size: 10px;
+    transition: all 0.3s ease;
+    margin-right: 10px;
+}
+
+.save-follow:hover {
+    background-color: rgba(46, 255, 81, 0.742);
+}
+
+.popup-follow-header .close-btn {
+    font-size: 18px;
+    padding: 0 8px;
+    position: absolute;
+    top: 7px;
+    right: 10px;
+    cursor: pointer;
     background: none;
     border: none;
-    font-size: 20px;
-    cursor: pointer;
+    color: #fff;
+    transition: color 0.3s;
 }
 
-.follow-btn {
-    margin-top: 10px;
-    padding: 8px 12px;
-    background-color: #007bff;
-    color: white;
-    border: none;
-    cursor: pointer;
+.popup-follow-header .close-btn:hover {
+    color: #ff0000;
 }
 
-.follow-btn:hover {
-    background-color: #0056b3;
+.popup-content-follow {
+    max-height: 300px;
+    overflow-y: auto;
 }
 
-.open-follow-list {
-    position: fixed;
-    top: 10px;
-    right: 20px;
-    padding: 8px 12px;
-    background-color: #28a745;
-    color: white;
-    border: none;
-    cursor: pointer;
+/* Scrollbar styling */
+.popup-content-follow::-webkit-scrollbar {
+    width: 6px;
+}
+.popup-content-follow::-webkit-scrollbar-thumb {
+    background-color: rgba(255, 255, 255, 0.2);
+    border-radius: 2px;
 }
 
-.open-follow-list:hover {
-    background-color: #1e7e34;
+/* isi popup kanan */
+
+.follow-item {
+    margin-bottom: 10px;
+    padding: 10px;
+    background-color: rgb(44, 45, 45);
+    border-radius: 2px;
+    font-size: 10px;
+    color: #ffffff;
+}
+
+.follow-item div {
+    margin-bottom: 2px;
+    color: #e0e0e0;
+}
+
+.follow-item strong {
+    color: #ffffff;
+    font-weight: 600;
+}
+
+.follow-distance {
+    font-weight: bold;
+    color: #ffcc00;
 }

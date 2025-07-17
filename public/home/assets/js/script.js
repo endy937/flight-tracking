@@ -21,13 +21,13 @@ const baseLayers = {
     hybrid: L.tileLayer("https://mt1.google.com/vt/lyrs=y&x={x}&y={y}&z={z}"),
 };
 
-let currentBaseLayer = baseLayers.dark;
+let currentBaseLayer = baseLayers.dark2;
 currentBaseLayer.addTo(map);
 
-// document.getElementById("mapModeBtn").addEventListener("click", () => {
-//     const menu = document.getElementById("mapModeMenu");
-//     menu.style.display = menu.style.display === "none" ? "block" : "none";
-// });
+document.getElementById("mapModeBtn").addEventListener("click", () => {
+    const menu = document.getElementById("mapModeMenu");
+    menu.style.display = menu.style.display === "none" ? "block" : "none";
+});
 
 document.querySelectorAll("#mapModeMenu .mode-option").forEach((option) => {
     option.addEventListener("click", (e) => {
@@ -113,9 +113,9 @@ L.control
     .addTo(map);
 
 // Measure
-L.control
-    .measure({ primaryLengthUnit: "kilometers", primaryAreaUnit: "hectares" })
-    .addTo(map);
+// L.control
+//     .measure({ primaryLengthUnit: "kilometers", primaryAreaUnit: "hectares" })
+//     .addTo(map);
 
 // Feature group & draw
 const drawnItems = new L.FeatureGroup();
@@ -181,35 +181,35 @@ L.control.download = function (opts) {
 L.control.download({ position: "topleft" }).addTo(map);
 
 // Brightness
-L.Control.Brightness = L.Control.extend({
-    onAdd: function () {
-        const container = L.DomUtil.create(
-            "div",
-            "leaflet-bar leaflet-control leaflet-control-custom"
-        );
-        const slider = L.DomUtil.create("input", "", container);
-        slider.type = "range";
-        slider.min = "50";
-        slider.max = "150";
-        slider.value = "100";
-        slider.title = "Brightness";
-        slider.style.width = "100px";
-        slider.style.margin = "5px";
-        L.DomEvent.disableClickPropagation(container);
-        slider.addEventListener("input", (e) => {
-            const value = e.target.value;
-            document.querySelectorAll(".leaflet-tile").forEach((tile) => {
-                tile.style.filter = `brightness(${value}%)`;
-            });
-        });
-        return container;
-    },
-    onRemove: function () {},
-});
-L.control.brightness = function (opts) {
-    return new L.Control.Brightness(opts);
-};
-L.control.brightness({ position: "topright" }).addTo(map);
+// L.Control.Brightness = L.Control.extend({
+//     onAdd: function () {
+//         const container = L.DomUtil.create(
+//             "div",
+//             "leaflet-bar leaflet-control leaflet-control-custom"
+//         );
+//         const slider = L.DomUtil.create("input", "", container);
+//         slider.type = "range";
+//         slider.min = "50";
+//         slider.max = "150";
+//         slider.value = "100";
+//         slider.title = "Brightness";
+//         slider.style.width = "100px";
+//         slider.style.margin = "5px";
+//         L.DomEvent.disableClickPropagation(container);
+//         slider.addEventListener("input", (e) => {
+//             const value = e.target.value;
+//             document.querySelectorAll(".leaflet-tile").forEach((tile) => {
+//                 tile.style.filter = `brightness(${value}%)`;
+//             });
+//         });
+//         return container;
+//     },
+//     onRemove: function () {},
+// });
+// L.control.brightness = function (opts) {
+//     return new L.Control.Brightness(opts);
+// };
+// L.control.brightness({ position: "topright" }).addTo(map);
 
 // Map mode
 function setMapMode(mode) {
@@ -265,10 +265,11 @@ const trackPoints = {};
 const trackLines = {};
 let activeTrailId = null;
 let selectedAircraftId = null;
+let lastSelectedData = null;
 
 function updateMarker(flightData) {
     const { latitude, longitude, id, heading, callsign } = flightData;
-    if (!callsign) return; // Skip jika callsign kosong
+    if (!callsign) return;
 
     if (!isFinite(latitude) || !isFinite(longitude)) {
         console.error("Koordinat tidak valid:", latitude, longitude);
@@ -283,9 +284,11 @@ function updateMarker(flightData) {
     const icon = L.divIcon({ className: "flight-icon", html: iconHTML });
 
     if (!markers[callsign]) {
-        markers[callsign] = L.marker([latitude, longitude], { icon }).addTo(
-            map
-        );
+        markers[callsign] = L.marker([latitude, longitude], {
+            icon,
+            registration: flightData.registration,
+            icao24bit: flightData.icao24bit,
+        }).addTo(map);
         markers[callsign].on("click", () =>
             showFlightDetails(flightData, callsign)
         );
@@ -296,12 +299,15 @@ function updateMarker(flightData) {
         interpolateMarker(markers[callsign], startPos, endPos, duration, () => {
             markers[callsign].setIcon(icon);
 
-            // Update jejak jika di-follow
-            if (followedAircrafts.includes(callsign)) {
+            // Jika pesawat di-follow, tambahkan point trail
+            const isFollowed = followedAircrafts.find(
+                (item) => item.id === callsign
+            );
+            if (isFollowed) {
                 trackPoints[callsign].push([latitude, longitude]);
                 if (!trackLines[callsign]) {
                     trackLines[callsign] = L.polyline(trackPoints[callsign], {
-                        color: "yellow", // Warna untuk yang di-follow
+                        color: "yellow",
                         weight: 2,
                     }).addTo(map);
                 } else {
@@ -358,6 +364,7 @@ function updatePopupContent(flightData) {
 
 function showFlightDetails(flightData, callsign) {
     selectedAircraftId = callsign;
+    lastSelectedData = flightData; // ✅ simpan data terakhir
 
     if (!trackPoints[callsign]) {
         trackPoints[callsign] = [markers[callsign].getLatLng()];
@@ -396,16 +403,26 @@ socket.onmessage = (event) => {
         console.log("Data diterima:", flightDataArray);
 
         const now = Date.now();
-        const canSave = now - lastSaveTime > 3000; // 3 detik
+        const canSave = now - lastSaveTime > 3000;
 
         flightDataArray.forEach((flightData) => {
             updateMarker(flightData);
+
+            // Update data koordinat real-time di list follow
+            const followed = followedAircrafts.find(
+                (item) => item.id === flightData.callsign
+            );
+            if (followed) {
+                followed.lat = flightData.latitude.toFixed(6);
+                followed.lng = flightData.longitude.toFixed(6);
+            }
         });
 
-        if (saveMode && canSave && flightDataArray.length > 0) {
-            // Contoh: kirim data pesawat pertama saja (untuk tes)
-            const firstFlight = flightDataArray[0];
+        // Update list follow biar data koordinat real-time
+        updateFollowedList();
 
+        if (saveMode && canSave && flightDataArray.length > 0) {
+            const firstFlight = flightDataArray[0];
             fetch("/api/save-adsb", {
                 method: "POST",
                 headers: {
@@ -437,82 +454,163 @@ socket.onmessage = (event) => {
 
 //follow
 const followedAircrafts = [];
+const latestFlightData = {};
 
 function followAircraft() {
     if (!selectedAircraftId) {
         alert("Tidak ada pesawat yang dipilih");
         return;
     }
-    if (!followedAircrafts.includes(selectedAircraftId)) {
-        followedAircrafts.push(selectedAircraftId);
-        console.log("Follow pesawat:", selectedAircraftId);
 
-        // Pastikan line tetap aktif
-        if (!trackLines[selectedAircraftId]) {
-            trackPoints[selectedAircraftId] = [
-                markers[selectedAircraftId].getLatLng(),
-            ];
-            trackLines[selectedAircraftId] = L.polyline(
-                trackPoints[selectedAircraftId],
-                {
-                    color: "yellow",
-                    weight: 2,
-                }
-            ).addTo(map);
-        } else {
-            trackLines[selectedAircraftId].setStyle({ color: "yellow" });
-        }
+    const marker = markers[selectedAircraftId];
+    if (!marker) {
+        alert("Marker tidak ditemukan atau belum dimuat");
+        console.error("Marker undefined untuk:", selectedAircraftId);
+        return;
+    }
+
+    const latlng = marker.getLatLng();
+    const registration = marker.options.registration || "-";
+    const icao24bit = marker.options.icao24bit || "-";
+
+    if (!followedAircrafts.find((item) => item.id === selectedAircraftId)) {
+        followedAircrafts.push({
+            id: selectedAircraftId,
+            lat: latlng.lat.toFixed(6),
+            lng: latlng.lng.toFixed(6),
+            registration,
+            icao24bit,
+        });
+        console.log(
+            "✅ Pesawat ditambahkan ke daftar follow:",
+            selectedAircraftId
+        );
     } else {
         console.log("Pesawat sudah di-follow:", selectedAircraftId);
     }
+
     updateFollowedList();
+    document.getElementById("rightPopupMenu").style.display = "block";
+
+    // === Simpan ke database ===
+    // fetch("/follow-aircraft", {
+    //     method: "POST",
+    //     headers: {
+    //         "Content-Type": "application/json",
+    //         "X-CSRF-TOKEN": csrfToken,
+    //     },
+    //     body: JSON.stringify({
+    //         callsign: selectedAircraftId,
+    //         lat: latlng.lat,
+    //         lon: latlng.lng,
+    //         registration: lastSelectedData?.registration || "-",
+    //         icao24bit: lastSelectedData?.icao24bit || "-",
+    //     }),
+    // })
+    //     .then((res) => res.json())
+    //     .then((data) => {
+    //         console.log("✅ Pesawat berhasil disimpan ke DB:", data);
+    //     })
+    //     .catch((error) => {
+    //         console.error("❌ Gagal simpan ke DB:", error);
+    //     });
 }
 
 function updateFollowedList() {
     const container = document.getElementById("popupContentFollow");
     container.innerHTML = "";
 
-    followedAircrafts.forEach((callsign) => {
-        const item = document.createElement("div");
-        item.textContent = `Callsign: ${callsign}`;
-        container.appendChild(item);
+    const template = document.getElementById("followTemplate");
 
-        if (!trackLines[callsign]) {
-            trackPoints[callsign] = [markers[callsign].getLatLng()];
-            trackLines[callsign] = L.polyline(trackPoints[callsign], {
+    followedAircrafts.forEach((aircraft) => {
+        // Clone template
+        const clone = template.content.cloneNode(true);
+
+        // Isi data
+        clone.querySelector(".follow-callsign").textContent = aircraft.id;
+        clone.querySelector(".follow-lat").textContent = aircraft.lat;
+        clone.querySelector(".follow-lng").textContent = aircraft.lng;
+        clone.querySelector(".follow-registration").textContent =
+            aircraft.registration || "-";
+        clone.querySelector(".follow-icao").textContent =
+            aircraft.icao24bit || "-";
+
+        // Tambahkan ke container
+        container.appendChild(clone);
+
+        // Tambahkan garis trail kalau belum
+        if (!trackLines[aircraft.id]) {
+            trackPoints[aircraft.id] = [markers[aircraft.id].getLatLng()];
+            trackLines[aircraft.id] = L.polyline(trackPoints[aircraft.id], {
                 color: "yellow",
                 weight: 2,
             }).addTo(map);
-        } else {
-            trackLines[callsign].setStyle({ color: "yellow" });
         }
     });
 }
 
+//close pop-up kanan
 function toggleRightPopupMenu() {
     const popup = document.getElementById("rightPopupMenu");
-    popup.classList.toggle("active");
+    popup.style.display = "none";
 }
 
 //reset follow
-
 function resetFollowedAircrafts() {
     // Hapus semua garis trail dari map
-    followedAircrafts.forEach((callsign) => {
-        if (trackLines[callsign]) {
-            map.removeLayer(trackLines[callsign]);
-            trackLines[callsign] = null;
-            trackPoints[callsign] = [];
+    followedAircrafts.forEach((aircraft) => {
+        if (trackLines[aircraft.id]) {
+            map.removeLayer(trackLines[aircraft.id]);
+            trackLines[aircraft.id] = null;
+            trackPoints[aircraft.id] = [];
         }
     });
 
     // Kosongkan array
     followedAircrafts.length = 0;
 
-    // Update tampilan
+    // Update tampilan popup
     updateFollowedList();
-    console.log("Daftar pesawat di-follow sudah di-reset.");
+
+    console.log("Daftar pesawat di-follow sudah di-reset & garis dihapus.");
 }
+
+function saveFollowedAircrafts() {
+    if (followedAircrafts.length === 0) {
+        alert("Belum ada pesawat yang di-follow");
+        return;
+    }
+
+    followedAircrafts.forEach((aircraft) => {
+        fetch("/follow-aircraft", {
+            method: "POST",
+            headers: {
+                "Content-Type": "application/json",
+                "X-CSRF-TOKEN": csrfToken,
+            },
+            body: JSON.stringify({
+                callsign: aircraft.id,
+                lat: aircraft.lat,
+                lon: aircraft.lng,
+                registration: aircraft.registration,
+                icao24bit: aircraft.icao24bit,
+            }),
+        })
+            .then((res) => res.json())
+            .then((data) => {
+                console.log("✅ Pesawat berhasil disimpan ke DB:", data);
+            })
+            .catch((error) => {
+                console.error("❌ Gagal simpan ke DB:", error);
+            });
+    });
+
+    alert("Semua pesawat yang di-follow sudah dikirim ke database!");
+}
+
+document
+    .getElementById("saveFollowedBtn")
+    .addEventListener("click", saveFollowedAircrafts);
 
 socket.onopen = () => console.log("WebSocket terhubung");
 socket.onerror = (error) => console.error("WebSocket error:", error.message);
