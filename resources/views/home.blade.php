@@ -16,7 +16,9 @@
 
                 </div>
                 <div class="popup-content-pesawat" id="popupContentP"></div>
-                <button class="follow-btn" id="followButton" onclick="followAircraft()">Follow</button>
+                <div class="popup-pesawat-footer">
+                    <button class="follow-btn" id="followButton" onclick="followAircraft()">Follow</button>
+                </div>
             </div>
 
             {{-- pop-up follow --}}
@@ -44,8 +46,23 @@
 
             </div>
 
+
         </div>
     </div>
+    <!-- Brightness Control di luar Leaflet -->
+
+    {{-- <div id="brightness-control">
+        <button id="toggle-brightness" title="Adjust Brightness">
+            <img src="{{ asset('home/assets/images/brightness.png') }}" alt="Brightness Icon" />
+        </button>
+        <div id="slider-wrapper">
+            <input type="range" id="brightness-slider" min="50" max="150" value="100" />
+        </div>
+    </div> --}}
+
+
+
+
 
     <!-- Map mode button -->
     <div id="mapModeBtn" class="leaflet-bar leaflet-control leaflet-control-custom"
@@ -79,6 +96,8 @@
             Simpan ke Database
         </label>
     </div>
+
+
 
     </div>
 @endsection

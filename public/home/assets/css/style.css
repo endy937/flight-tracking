@@ -7,33 +7,10 @@ html {
     padding: 0;
     height: 100%;
 }
-
 .map {
     height: 100%;
     width: 100%;
     z-index: 1;
-}
-
-/* Popup menu umum */
-.popup-menu.active {
-    right: 0;
-}
-
-.popup-menu .close-btn,
-.left-popup-menu .close-btn {
-    position: absolute;
-    top: 10px;
-    right: 10px;
-    cursor: pointer;
-    font-size: 18px;
-    background: none;
-    border: none;
-    color: #ffffff;
-}
-
-.popup-menu .close-btn:hover,
-.left-popup-menu .close-btn:hover {
-    color: #000;
 }
 
 /* Left popup menu style */
@@ -61,6 +38,9 @@ html {
     left: 10px;
 }
 
+#mapModeBtn {
+    cursor: pointer;
+}
 .popup-pesawat-header {
     display: flex;
     justify-content: space-between;
@@ -119,17 +99,17 @@ html {
     border-radius: 2px;
     font-size: 12px;
 }
-
+/* 
 #mapModeMenu .mode-option,
 #fullscreenMenu .fs-option {
     padding: 4px 8px;
     cursor: pointer;
-}
-
+} */
+/* 
 #mapModeMenu .mode-option:hover,
 #fullscreenMenu .fs-option:hover {
     background: rgba(255, 255, 255, 0.2);
-}
+} */
 
 #fullscreenBtn:hover {
     background: rgba(255, 255, 255, 0.2);

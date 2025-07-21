@@ -181,35 +181,23 @@ L.control.download = function (opts) {
 L.control.download({ position: "topleft" }).addTo(map);
 
 // Brightness
-// L.Control.Brightness = L.Control.extend({
-//     onAdd: function () {
-//         const container = L.DomUtil.create(
-//             "div",
-//             "leaflet-bar leaflet-control leaflet-control-custom"
-//         );
-//         const slider = L.DomUtil.create("input", "", container);
-//         slider.type = "range";
-//         slider.min = "50";
-//         slider.max = "150";
-//         slider.value = "100";
-//         slider.title = "Brightness";
-//         slider.style.width = "100px";
-//         slider.style.margin = "5px";
-//         L.DomEvent.disableClickPropagation(container);
-//         slider.addEventListener("input", (e) => {
-//             const value = e.target.value;
-//             document.querySelectorAll(".leaflet-tile").forEach((tile) => {
-//                 tile.style.filter = `brightness(${value}%)`;
-//             });
+// document.addEventListener("DOMContentLoaded", function () {
+//     const toggleBtn = document.getElementById("toggle-brightness");
+//     const sliderWrapper = document.getElementById("slider-wrapper");
+//     const slider = document.getElementById("brightness-slider");
+
+//     toggleBtn.addEventListener("click", () => {
+//         sliderWrapper.style.display =
+//             sliderWrapper.style.display === "none" ? "block" : "none";
+//     });
+
+//     slider.addEventListener("input", (e) => {
+//         const value = e.target.value;
+//         document.querySelectorAll(".leaflet-tile").forEach((tile) => {
+//             tile.style.filter = `brightness(${value}%)`;
 //         });
-//         return container;
-//     },
-//     onRemove: function () {},
+//     });
 // });
-// L.control.brightness = function (opts) {
-//     return new L.Control.Brightness(opts);
-// };
-// L.control.brightness({ position: "topright" }).addTo(map);
 
 // Map mode
 function setMapMode(mode) {
@@ -277,11 +265,18 @@ function updateMarker(flightData) {
     }
 
     const endPos = L.latLng(latitude, longitude);
-    const duration = 5000;
-    const iconHTML = `<div style="transform: rotate(${heading}deg); width: 25px; height: 30px;">
-        <img src="home/assets/images/plane.png" style="width: 100%; height: 100%;" alt="plane" />
+    const duration = 2000;
+    const iconHTML = `
+    <div style="transform: rotate(${heading}deg); width: 25px; height: 30px;">
+    <img src="home/assets/images/plane.png" style="width: 100%; height: 100%;" alt="plane" />
     </div>`;
-    const icon = L.divIcon({ className: "flight-icon", html: iconHTML });
+
+    const icon = L.divIcon({
+        className: "flight-icon",
+        html: iconHTML,
+        iconSize: [25, 30], // ukuran sesuai gambar
+        iconAnchor: [12.5, 15], // setengah dari width dan height
+    });
 
     if (!markers[callsign]) {
         markers[callsign] = L.marker([latitude, longitude], {
@@ -403,7 +398,7 @@ socket.onmessage = (event) => {
         console.log("Data diterima:", flightDataArray);
 
         const now = Date.now();
-        const canSave = now - lastSaveTime > 3000;
+        const canSave = now - lastSaveTime > 2000;
 
         flightDataArray.forEach((flightData) => {
             updateMarker(flightData);

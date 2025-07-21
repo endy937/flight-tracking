@@ -8,16 +8,6 @@ use App\Http\Controllers\AdminController;
 use App\Http\Controllers\UserController;
 // use App\Http\Controllers\FollowedAircraftController;
 use App\Http\Controllers\FlightController;
-/*
-|--------------------------------------------------------------------------
-| Web Routes
-|--------------------------------------------------------------------------
-|
-| Here is where you can register web routes for your application. These
-| routes are loaded by the RouteServiceProvider and all of them will
-| be assigned to the "web" middleware group. Make something great!
-|
-*/
 
 Route::get('/', function () {
     return redirect()->route('login');
@@ -52,6 +42,9 @@ Route::middleware(['auth', 'user-access:admin'])->group(function () {
     Route::get('/admin/products/edit/{id}', [ProductController::class, 'edit'])->name('admin/products/edit');
     Route::put('/admin/products/edit/{id}', [ProductController::class, 'update'])->name('admin/products/update');
     Route::delete('/admin/products/destroy/{id}', [ProductController::class, 'destroy'])->name('admin/products/destroy');
+    // home bisa di akses juga oleh admin
+    // Route::get('admin/h', [HomeController::class, 'index'])->name('home');
+    
 });
 
 // Route::post('/follow-aircraft', [FollowedAircraftController::class, 'store'])->name('follow-aircraft');

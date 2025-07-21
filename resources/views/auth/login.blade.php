@@ -10,7 +10,7 @@
 </head>
 
 <body>
-    <div class="min-h-screen bg-black bg-opacity-80 bg-cover bg-center flex items-center justify-center"
+    <div class="min-h-screen bg-black bg-opacity-90 bg-cover bg-center flex items-center justify-center"
         style="background-image: url('{{ asset('home/assets/images/bg-lg.png') }}');
         background-color: rgba(0, 0, 0, 0.7);
         background-blend-mode: darken;
