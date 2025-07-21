@@ -2,12 +2,10 @@
 
 use Illuminate\Support\Facades\Route;
 use App\Http\Controllers\AuthController;
-use App\Http\Controllers\ProductController;
 use App\Http\Controllers\HomeController;
 use App\Http\Controllers\AdminController;
-use App\Http\Controllers\UserController;
-// use App\Http\Controllers\FollowedAircraftController;
 use App\Http\Controllers\FlightController;
+use App\Http\Controllers\UserController;
 
 Route::get('/', function () {
     return redirect()->route('login');
@@ -35,20 +33,12 @@ Route::middleware(['auth', 'user-access:admin'])->group(function () {
 
     Route::get('/admin/profile', [AdminController::class, 'profilepage'])->name('admin/profile');
 
-    Route::get('/admin/products', [ProductController::class, 'index'])->name('admin/products');
-    Route::get('/admin/products/create', [ProductController::class, 'create'])->name('admin/products/create');
-    Route::post('/admin/products/store', [ProductController::class, 'store'])->name('admin/products/store');
-    Route::get('/admin/products/show/{id}', [ProductController::class, 'show'])->name('admin/products/show');
-    Route::get('/admin/products/edit/{id}', [ProductController::class, 'edit'])->name('admin/products/edit');
-    Route::put('/admin/products/edit/{id}', [ProductController::class, 'update'])->name('admin/products/update');
-    Route::delete('/admin/products/destroy/{id}', [ProductController::class, 'destroy'])->name('admin/products/destroy');
-    // home bisa di akses juga oleh admin
-    // Route::get('admin/h', [HomeController::class, 'index'])->name('home');
-    
+    Route::get('/admin/user', [UserController::class, 'index'])->name('user_index');
+    Route::get('/admin/user/{id}', [UserController::class, 'edit'])->name('user_edit');
+    Route::get('/admin/create', [UserController::class, 'create'])->name('user_create');
+    Route::post('/admin/user', [UserController::class, 'store'])->name('user_store');
+    Route::delete('/admin/user/{id}/delete', [UserController::class, 'destroy'])->name('user_delete');
+
 });
-
-// Route::post('/follow-aircraft', [FollowedAircraftController::class, 'store'])->name('follow-aircraft');
-
-
 
 Route::post('/follow-aircraft', [FlightController::class, 'store'])->name('follow-aircraft');

@@ -4,8 +4,20 @@
 
 @section('contents')
     <h2>Dashboard Pemantauan Penerbangan Real-Time</h2>
+    {{-- @if (Auth::user()->type == 1)
+        <div class="bg-white rounded-2xl shadow p-4 h-60 flex items-center justify-center">
+            <canvas id="avgAltitudeChart" class="w-full h-full" height="180"></canvas>
+        </div>
+    @else
+        <div class="bg-white rounded-2xl shadow p-4 h-60 flex items-center justify-center">
+            <canvas id="aircraftCountChart" class="w-full h-full" height="180"></canvas>
+        </div>
+    @endif --}}
 
     <div class="container mx-auto py-4 px-2">
+
+
+
         <div class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 gap-4">
             <div class="bg-white rounded-2xl shadow p-4 h-60 flex items-center justify-center">
                 <canvas id="aircraftCountChart" class="w-full h-full" height="180"></canvas>

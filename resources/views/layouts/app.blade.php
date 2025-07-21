@@ -103,14 +103,14 @@
                         <span class="text-[15px] ml-4 text-gray-200 font-bold">Dashboard</span>
                     </div>
                 </a>
-                <a href="{{ route('home') }}">
+                <a href="">
                     <div
                         class="p-2.5 mt-3 flex items-center rounded-md px-4 duration-300 cursor-pointer hover:bg-green-400 text-white">
                         <i class="bi bi-house-door-fill"></i>
                         <span class="text-[15px] ml-4 text-gray-200 font-bold">Home</span>
                     </div>
                 </a>
-                <a href="{{ route('admin/products') }}">
+                <a href="{{ route('user_index') }}">
                     <div
                         class="p-2.5 mt-3 flex items-center rounded-md px-4 duration-300 cursor-pointer hover:bg-green-400 text-white">
                         <i class="bi bi-bookmark-fill"></i>
@@ -137,6 +137,8 @@
     <script src="https://cdn.jsdelivr.net/gh/alpinejs/alpine@v2.8.2/dist/alpine.min.js"></script>
     <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
     <script src="{{ asset('home/assets/js/admin.js') }}"></script>
+    @include('sweetalert::alert')
+
 
 </body>
 

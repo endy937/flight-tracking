@@ -486,29 +486,6 @@ function followAircraft() {
 
     updateFollowedList();
     document.getElementById("rightPopupMenu").style.display = "block";
-
-    // === Simpan ke database ===
-    // fetch("/follow-aircraft", {
-    //     method: "POST",
-    //     headers: {
-    //         "Content-Type": "application/json",
-    //         "X-CSRF-TOKEN": csrfToken,
-    //     },
-    //     body: JSON.stringify({
-    //         callsign: selectedAircraftId,
-    //         lat: latlng.lat,
-    //         lon: latlng.lng,
-    //         registration: lastSelectedData?.registration || "-",
-    //         icao24bit: lastSelectedData?.icao24bit || "-",
-    //     }),
-    // })
-    //     .then((res) => res.json())
-    //     .then((data) => {
-    //         console.log("✅ Pesawat berhasil disimpan ke DB:", data);
-    //     })
-    //     .catch((error) => {
-    //         console.error("❌ Gagal simpan ke DB:", error);
-    //     });
 }
 
 function updateFollowedList() {
@@ -577,19 +554,23 @@ function saveFollowedAircrafts() {
     }
 
     followedAircrafts.forEach((aircraft) => {
+        const body = JSON.stringify({
+            callsign: aircraft.id,
+            lat: aircraft.lat,
+            lon: aircraft.lng,
+            registration: aircraft.registration,
+            icao24bit: aircraft.icao24bit,
+        });
+
+        console.log("Request body:", body);
+
         fetch("/follow-aircraft", {
             method: "POST",
             headers: {
                 "Content-Type": "application/json",
                 "X-CSRF-TOKEN": csrfToken,
             },
-            body: JSON.stringify({
-                callsign: aircraft.id,
-                lat: aircraft.lat,
-                lon: aircraft.lng,
-                registration: aircraft.registration,
-                icao24bit: aircraft.icao24bit,
-            }),
+            body: body,
         })
             .then((res) => res.json())
             .then((data) => {

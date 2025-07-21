@@ -26,4 +26,11 @@ class FlightController extends Controller
             'data' => $follow,
         ]);
     }
+    public function store (Request $request){
+        $data = $request->all();
+
+         FollowAircraft::create($data);
+
+        return response()->json($data);
+    }
 }
