@@ -23,6 +23,8 @@ class User extends Authenticatable
         'name',
         'email',
         'password',
+        'type',
+        'created_by',
     ];
 
     /**
@@ -51,4 +53,10 @@ class User extends Authenticatable
             get: fn ($value) =>  ["user", "admin"][$value],
         );
     }
+
+    public function getTypeRawAttribute()
+{
+    return $this->attributes['type'];
+}
+
 }

@@ -8,6 +8,7 @@ return new class extends Migration {
     {
         Schema::create('follow_aircraft', function (Blueprint $table) {
             $table->id();
+            $table->string('created_by')->nullable();
             $table->string('callsign');
             $table->decimal('lat', 10, 6);
             $table->decimal('lon', 10, 6);

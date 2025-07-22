@@ -4,6 +4,7 @@ namespace App\Http\Controllers;
 
 use Illuminate\Http\Request;
 use App\Models\FollowAircraft;
+use Illuminate\Support\Facades\Auth;
 
 class FlightController extends Controller
 {
@@ -28,8 +29,11 @@ class FlightController extends Controller
     }
     public function store (Request $request){
         $data = $request->all();
+        $userLogin = Auth::user()->name;
 
-         FollowAircraft::create($data);
+        $data['created_by']=$userLogin;
+
+        FollowAircraft::create($data);
 
         return response()->json($data);
     }

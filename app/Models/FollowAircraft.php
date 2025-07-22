@@ -12,6 +12,7 @@ class FollowAircraft extends Model
     protected $table = 'follow_aircraft';
 
     protected $fillable = [
+        'created_by',
         'callsign',
         'lat',
         'lon',
