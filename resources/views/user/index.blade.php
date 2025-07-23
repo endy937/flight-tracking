@@ -4,8 +4,8 @@
 
 @section('contents')
     <div style="width: 100%; height: 100%;">
-        <div class="header">
-            <h2>table user</h2>
+        <div class="header mb-3">
+            <h2>Table User</h2>
         </div>
         <div class="justify-between mb-5">
             <a href="{{ route('user_create') }}"

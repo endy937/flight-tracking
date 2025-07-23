@@ -112,11 +112,6 @@ L.control
     })
     .addTo(map);
 
-// Measure
-// L.control
-//     .measure({ primaryLengthUnit: "kilometers", primaryAreaUnit: "hectares" })
-//     .addTo(map);
-
 // Feature group & draw
 const drawnItems = new L.FeatureGroup();
 map.addLayer(drawnItems);
@@ -547,6 +542,7 @@ function resetFollowedAircrafts() {
     console.log("Daftar pesawat di-follow sudah di-reset & garis dihapus.");
 }
 
+//save follow
 function saveFollowedAircrafts() {
     if (followedAircrafts.length === 0) {
         alert("Belum ada pesawat yang di-follow");

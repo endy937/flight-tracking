@@ -44,12 +44,12 @@
 
 
                 <div class="flex justify-between items-center">
-                    <input type="hidden" value="{{ old('id', $data->id ?? '') }}">
-                    <a href="{{ route('user_index') }}"
-                        class="bg-yellow-400 px-4 py-2 rounded-lg text-gray-600 ">Kembali</a>
+                    <input type="hidden" name="id" value="{{ old('id', $data->id ?? '') }}">
+                    <a href="{{ route('user_index') }}" class="bg-yellow-400 px-4 py-2 rounded-lg text-gray-600">Kembali</a>
                     <button type="submit"
                         class="bg-blue-500 text-white px-4 py-2 rounded-lg hover:bg-blue-600">Simpan</button>
                 </div>
+
             </form>
         </div>
 

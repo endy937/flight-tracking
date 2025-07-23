@@ -54,8 +54,8 @@
             <div class="flex items-center text-white">
                 <button data-dropdown class="flex items-center px-3 py-2 focus:outline-none" type="button"
                     x-data="{ open: false }" @click="open = true" :class="{ 'bg-gray-200 rounded-md': open }">
-                    <img src="https://images.unsplash.com/photo-1544005313-94ddf0286df2?ixlib=rb-1.2.1&ixid=eyJhcHBfaWQiOjEyMDd9&auto=format&fit=crop&w=100&h=100&q=80"
-                        alt="Profle" class="h-8 w-8 rounded-full">
+                    {{-- <img src="https://images.unsplash.com/photo-1544005313-94ddf0286df2?ixlib=rb-1.2.1&ixid=eyJhcHBfaWQiOjEyMDd9&auto=format&fit=crop&w=100&h=100&q=80"
+                        alt="Profle" class="h-8 w-8 rounded-full"> --}}
 
                     <span class="ml-4 text-sm hidden md:inline-block text-white">
                         {{ Auth::user()->name ?? 'Guest' }}
@@ -103,18 +103,26 @@
                         <span class="text-[15px] ml-4 text-gray-200 font-bold">Dashboard</span>
                     </div>
                 </a>
-                <a href="">
-                    <div
-                        class="p-2.5 mt-3 flex items-center rounded-md px-4 duration-300 cursor-pointer hover:bg-green-400 text-white">
-                        <i class="bi bi-house-door-fill"></i>
-                        <span class="text-[15px] ml-4 text-gray-200 font-bold">Home</span>
-                    </div>
-                </a>
+
                 <a href="{{ route('user_index') }}">
                     <div
                         class="p-2.5 mt-3 flex items-center rounded-md px-4 duration-300 cursor-pointer hover:bg-green-400 text-white">
                         <i class="bi bi-bookmark-fill"></i>
                         <span class="text-[15px] ml-4 text-gray-200 font-bold">User Management</span>
+                    </div>
+                </a>
+                <a href="{{ route('adsb_index') }}">
+                    <div
+                        class="p-2.5 mt-3 flex items-center rounded-md px-4 duration-300 cursor-pointer hover:bg-green-400 text-white">
+                        <i class="bi bi-bookmark-fill"></i>
+                        <span class="text-[15px] ml-4 text-gray-200 font-bold">Aircrast Data</span>
+                    </div>
+                </a>
+                <a href="{{ route('follow_index') }}">
+                    <div
+                        class="p-2.5 mt-3 flex items-center rounded-md px-4 duration-300 cursor-pointer hover:bg-green-400 text-white">
+                        <i class="bi bi-bookmark-fill"></i>
+                        <span class="text-[15px] ml-4 text-gray-200 font-bold">Follow Aircraft</span>
                     </div>
                 </a>
                 <a href="{{ route('logout') }}">
@@ -137,6 +145,11 @@
     <script src="https://cdn.jsdelivr.net/gh/alpinejs/alpine@v2.8.2/dist/alpine.min.js"></script>
     <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
     <script src="{{ asset('home/assets/js/admin.js') }}"></script>
+    <script src="{{ asset('home/assets/js/chart.js') }}"></script>
+    <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+    {{-- <script>
+        window.followedChartData = @json($chartData);
+    </script> --}}
     @include('sweetalert::alert')
 
 

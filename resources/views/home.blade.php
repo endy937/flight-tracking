@@ -48,6 +48,8 @@
 
 
         </div>
+        <div id="leaflet-bottom-center" class="leaflet-control custom-bottom-center"></div>
+
     </div>
     <!-- Brightness Control di luar Leaflet -->
 
@@ -72,7 +74,7 @@
 
     <!-- Map mode menu -->
     <div id="mapModeMenu"
-        style="display: none; position: absolute; bottom: 60px; left: 10px; background: rgba(0,0,0,0.8); color: white; padding: 5px; border-radius: 5px; z-index: 1001;">
+        style="display: none; position: absolute; bottom: 60px; left: 10px; background: rgba(0,0,0,0.8); color: white; padding: 5px; border-radius: 5px; z-index: 1001; cursor: pointer;">
         <div class="mode-option" data-mode="streets">Streets</div>
         <div class="mode-option" data-mode="satellite">Satellite</div>
         <div class="mode-option" data-mode="dark">Theme</div>

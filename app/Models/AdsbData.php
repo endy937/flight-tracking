@@ -21,5 +21,6 @@ class AdsbData extends Model
         'altitude',
         'speed',
         'heading',
+        
     ];
 }

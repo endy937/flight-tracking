@@ -5,6 +5,8 @@ namespace App\Http\Controllers;
 use Illuminate\Http\Request;
 use App\Models\FollowAircraft;
 use Illuminate\Support\Facades\Auth;
+use RealRashid\SweetAlert\Facades\Alert;
+use Illuminate\Support\Facades\DB;
 
 class FlightController extends Controller
 {
@@ -37,4 +39,42 @@ class FlightController extends Controller
 
         return response()->json($data);
     }
+
+    public function index(){
+    $alert = 'Delete Data!';
+    $text = "Are you sure you want to delete?";
+    confirmDelete($alert, $text);
+
+    // Hanya ambil 10 data per halaman
+    $data = FollowAircraft::latest()->paginate(10);
+
+    return view('follow.index', [
+        'data' => $data
+    ]);
+}
+
+public function destroy($id)
+{
+    $data = FollowAircraft::findOrFail($id);
+    $data->delete();
+
+    Alert::success('Success', 'Data Berhasil Dihapus');
+    return redirect()->route('follow_index');
+
+}
+
+public function chartFollowedAircraft()
+{
+    $chartData = DB::table('follow_aircraft')
+        ->selectRaw('DATE(created_at) as date, COUNT(*) as total')
+        ->groupByRaw('DATE(created_at)')
+        ->orderBy('date')
+        ->get();
+        dd($chartData);
+
+    return view('chart.index', [
+        'chartData' => $chartData
+    ]);
+}
+
 }

@@ -353,3 +353,23 @@ html {
     font-weight: bold;
     color: #ffcc00;
 }
+
+.custom-bottom-center {
+    position: absolute;
+    bottom: 20px;
+    left: 50%;
+    transform: translateX(-50%);
+    z-index: 1000;
+    display: flex;
+    gap: 10px;
+}
+
+#mapModeMenu .mode-option {
+    padding: 5px 10px;
+    transition: background 0.3s;
+}
+
+#mapModeMenu .mode-option:hover {
+    background: rgba(255, 255, 255, 0.2);
+    border-radius: 3px;
+}
