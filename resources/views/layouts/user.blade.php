@@ -50,6 +50,9 @@
     <script src="https://unpkg.com/leaflet-measure/dist/leaflet-measure.js"></script>
     <!-- Leaflet Geocoder -->
     <script src="https://unpkg.com/leaflet-control-geocoder/dist/Control.Geocoder.js"></script>
+
+    <script src="https://cdn.jsdelivr.net/npm/@turf/turf@6/turf.min.js"></script>
+
     <script src="{{ asset('home/assets/js/script.js') }}"></script>
 </body>
 

@@ -62,19 +62,4 @@ public function destroy($id)
     return redirect()->route('follow_index');
 
 }
-
-public function chartFollowedAircraft()
-{
-    $chartData = DB::table('follow_aircraft')
-        ->selectRaw('DATE(created_at) as date, COUNT(*) as total')
-        ->groupByRaw('DATE(created_at)')
-        ->orderBy('date')
-        ->get();
-        dd($chartData);
-
-    return view('chart.index', [
-        'chartData' => $chartData
-    ]);
-}
-
 }

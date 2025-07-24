@@ -41,45 +41,45 @@ document.querySelectorAll("#mapModeMenu .mode-option").forEach((option) => {
 
 L.control.scale().addTo(map);
 
-// Fullscreen button
-const fullscreenBtn = document.getElementById("fullscreenBtn");
-const fullscreenIcon = document.getElementById("fullscreenIcon");
-const containerElement = document.getElementById("mapContainer");
+// // Fullscreen button
+// const fullscreenBtn = document.getElementById("fullscreenBtn");
+// const fullscreenIcon = document.getElementById("fullscreenIcon");
+// const containerElement = document.getElementById("mapContainer");
 
-fullscreenBtn.addEventListener("click", () => {
-    if (
-        !document.fullscreenElement &&
-        !document.webkitFullscreenElement &&
-        !document.msFullscreenElement
-    ) {
-        if (containerElement.requestFullscreen)
-            containerElement.requestFullscreen();
-        else if (containerElement.webkitRequestFullscreen)
-            containerElement.webkitRequestFullscreen();
-        else if (containerElement.msRequestFullscreen)
-            containerElement.msRequestFullscreen();
-    } else {
-        if (document.exitFullscreen) document.exitFullscreen();
-        else if (document.webkitExitFullscreen) document.webkitExitFullscreen();
-        else if (document.msExitFullscreen) document.msExitFullscreen();
-    }
-});
+// fullscreenBtn.addEventListener("click", () => {
+//     if (
+//         !document.fullscreenElement &&
+//         !document.webkitFullscreenElement &&
+//         !document.msFullscreenElement
+//     ) {
+//         if (containerElement.requestFullscreen)
+//             containerElement.requestFullscreen();
+//         else if (containerElement.webkitRequestFullscreen)
+//             containerElement.webkitRequestFullscreen();
+//         else if (containerElement.msRequestFullscreen)
+//             containerElement.msRequestFullscreen();
+//     } else {
+//         if (document.exitFullscreen) document.exitFullscreen();
+//         else if (document.webkitExitFullscreen) document.webkitExitFullscreen();
+//         else if (document.msExitFullscreen) document.msExitFullscreen();
+//     }
+// });
 
-document.addEventListener("fullscreenchange", () => {
-    fullscreenIcon.src = document.fullscreenElement
-        ? "{{ asset('home/assets/images/exit.png') }}"
-        : "{{ asset('home/assets/images/full.png') }}";
-});
-document.addEventListener("webkitfullscreenchange", () => {
-    fullscreenIcon.src = document.webkitFullscreenElement
-        ? "{{ asset('home/assets/images/exit.png') }}"
-        : "{{ asset('home/assets/images/full.png') }}";
-});
-document.addEventListener("msfullscreenchange", () => {
-    fullscreenIcon.src = document.msFullscreenElement
-        ? "{{ asset('home/assets/images/exit.png') }}"
-        : "{{ asset('home/assets/images/full.png') }}";
-});
+// document.addEventListener("fullscreenchange", () => {
+//     fullscreenIcon.src = document.fullscreenElement
+//         ? "{{ asset('home/assets/images/exit.png') }}"
+//         : "{{ asset('home/assets/images/full.png') }}";
+// });
+// document.addEventListener("webkitfullscreenchange", () => {
+//     fullscreenIcon.src = document.webkitFullscreenElement
+//         ? "{{ asset('home/assets/images/exit.png') }}"
+//         : "{{ asset('home/assets/images/full.png') }}";
+// });
+// document.addEventListener("msfullscreenchange", () => {
+//     fullscreenIcon.src = document.msFullscreenElement
+//         ? "{{ asset('home/assets/images/exit.png') }}"
+//         : "{{ asset('home/assets/images/full.png') }}";
+// });
 
 // Search
 document.getElementById("search-form").addEventListener("submit", function (e) {
@@ -101,79 +101,190 @@ document.getElementById("search-form").addEventListener("submit", function (e) {
 });
 
 // Geolocation
-L.control
+let isLocating = false; // status toggle
+
+// Inisialisasi locateControl
+const locateControl = L.control
     .locate({
         setView: true,
         keepCurrentZoomLevel: true,
         flyTo: false,
         drawCircle: false,
+        showPopup: false,
         markerStyle: { weight: 2, opacity: 1, fillOpacity: 1 },
         circleStyle: { weight: 1, opacity: 0.5, fillOpacity: 0.2 },
+        locateOptions: {
+            enableHighAccuracy: true,
+        },
     })
     .addTo(map);
 
-// Feature group & draw
+// Hapus tombol locate default dari DOM
+const builtInLocate = document.querySelector(".leaflet-control-locate");
+if (builtInLocate) {
+    builtInLocate.remove(); // benar-benar hapus dari DOM
+}
+
+// Sembunyikan tombol bawaan plugin
+document.querySelector(".leaflet-control-locate")?.classList.add("hidden");
+
+const button = document.getElementById("custom-locate-btn");
+
+button.addEventListener("click", function () {
+    if (isLocating) {
+        locateControl.stop(); // stop tracking
+        isLocating = false;
+    } else {
+        locateControl.start(); // start tracking
+        isLocating = true;
+    }
+    updateButtonState();
+});
+
+// Opsional: Update tampilan tombol (misal highlight saat aktif)
+function updateButtonState() {
+    if (isLocating) {
+        button.classList.add("active-locate");
+    } else {
+        button.classList.remove("active-locate");
+    }
+}
+
+//draw toolbae
+// FeatureGroup tempat menyimpan hasil gambar
 const drawnItems = new L.FeatureGroup();
 map.addLayer(drawnItems);
-const drawControl = new L.Control.Draw({
-    edit: { featureGroup: drawnItems },
-    draw: { polygon: true, polyline: true, rectangle: true, marker: true },
-});
-map.addControl(drawControl);
 
+// Inisialisasi draw tools
+const drawControl = {
+    polygon: new L.Draw.Polygon(map, { shapeOptions: { color: "red" } }),
+    polyline: new L.Draw.Polyline(map, { shapeOptions: { color: "green" } }),
+    rectangle: new L.Draw.Rectangle(map, { shapeOptions: { color: "blue" } }),
+    circle: new L.Draw.Circle(map, { shapeOptions: { color: "orange" } }),
+    marker: new L.Draw.Marker(map, {
+        icon: new L.Icon.Default(),
+        repeatMode: false,
+    }),
+};
+
+const editControl = new L.EditToolbar.Edit(map, {
+    featureGroup: drawnItems,
+    selectedPathOptions: { maintainColor: true, opacity: 0.6 },
+});
+
+const deleteControl = new L.EditToolbar.Delete(map, {
+    featureGroup: drawnItems,
+});
+
+// Utility untuk menonaktifkan semua tools
+function disableAllTools() {
+    drawControl.polygon.disable();
+    drawControl.polyline.disable();
+    drawControl.rectangle.disable();
+    drawControl.marker.disable();
+    editControl.disable();
+    deleteControl.disable();
+}
+
+// Utility untuk menonaktifkan semua tombol aktif
+function deactivateAllButtons() {
+    document
+        .querySelectorAll(".draw-btn")
+        .forEach((btn) => btn.classList.remove("active"));
+}
+
+// Utility gabungan
+function resetToolsAndButtons() {
+    disableAllTools();
+    deactivateAllButtons();
+}
+
+// Toggle handler
+function setupToggleButton(buttonId, tool, isMarker = false) {
+    const button = document.getElementById(buttonId);
+    button.addEventListener("click", (e) => {
+        const isActive = button.classList.contains("active");
+        resetToolsAndButtons();
+
+        if (!isActive) {
+            if (isMarker) {
+                // Delay sedikit agar klik tombol tidak dihitung klik peta
+                setTimeout(() => {
+                    tool.enable();
+                }, 100); // 100ms sudah cukup
+            } else {
+                tool.enable();
+            }
+            button.classList.add("active");
+        }
+    });
+}
+
+// Pasang toggle ke semua tombol
+setupToggleButton("btn-draw-polygon", drawControl.polygon);
+setupToggleButton("btn-draw-polyline", drawControl.polyline);
+setupToggleButton("btn-draw-rectangle", drawControl.rectangle);
+setupToggleButton("btn-draw-circle", drawControl.circle);
+setupToggleButton("btn-draw-marker", drawControl.marker, true);
+setupToggleButton("btn-edit", editControl);
+setupToggleButton("btn-delete", deleteControl);
+
+// Setelah gambar selesai, nonaktifkan mode
 map.on(L.Draw.Event.CREATED, function (e) {
     const layer = e.layer;
     drawnItems.addLayer(layer);
-    layer.on("click", function () {
-        drawnItems.eachLayer(function (l) {
-            l.setStyle && l.setStyle({ color: "#3388ff" });
-        });
-        if (layer.setStyle) layer.setStyle({ color: "yellow" });
-        const shapeGeoJSON = layer.toGeoJSON();
-        console.log("Shape selected:", shapeGeoJSON);
-        layer.bindPopup("Shape Selected!").openPopup();
-    });
-});
-map.on(L.Draw.Event.EDITED, function (e) {});
-map.on(L.Draw.Event.DELETED, function (e) {});
 
-// Download
-L.Control.Download = L.Control.extend({
-    onAdd: function () {
-        const container = L.DomUtil.create(
-            "div",
-            "leaflet-bar leaflet-control leaflet-control-custom"
-        );
-        const button = L.DomUtil.create("a", "", container);
-        button.innerHTML = "💾";
-        button.href = "#";
-        button.title = "Download GeoJSON";
-        button.style.fontSize = "20px";
-        button.style.textAlign = "center";
-        button.style.lineHeight = "30px";
-        L.DomEvent.on(button, "click", function (e) {
-            L.DomEvent.stop(e);
-            const data = drawnItems.toGeoJSON();
-            const blob = new Blob([JSON.stringify(data, null, 2)], {
-                type: "application/json",
-            });
-            const url = URL.createObjectURL(blob);
-            const tempLink = document.createElement("a");
-            tempLink.href = url;
-            tempLink.download = "drawn_shapes.geojson";
-            document.body.appendChild(tempLink);
-            tempLink.click();
-            document.body.removeChild(tempLink);
-            URL.revokeObjectURL(url);
-        });
-        return container;
-    },
-    onRemove: function () {},
+    let popupContent = "";
+
+    // Polyline: hitung total panjang (meter)
+    if (layer instanceof L.Polyline && !(layer instanceof L.Polygon)) {
+        const latlngs = layer.getLatLngs();
+        let totalDistance = 0;
+        for (let i = 1; i < latlngs.length; i++) {
+            totalDistance += latlngs[i - 1].distanceTo(latlngs[i]);
+        }
+
+        const distanceStr =
+            totalDistance >= 1000
+                ? (totalDistance / 1000).toFixed(2) + " km"
+                : totalDistance.toFixed(1) + " m";
+
+        popupContent = `Total length: <strong>${distanceStr}</strong>`;
+    }
+
+    // Circle: tampilkan radius
+    else if (layer instanceof L.Circle) {
+        const radius = layer.getRadius();
+        const radiusStr =
+            radius >= 1000
+                ? (radius / 1000).toFixed(2) + " km"
+                : radius.toFixed(1) + " m";
+
+        popupContent = `Radius: <strong>${radiusStr}</strong>`;
+    }
+
+    // Polygon (opsional): hitung luas
+    else if (layer instanceof L.Polygon) {
+        try {
+            const geojson = layer.toGeoJSON();
+            const area = turf.area(geojson); // pakai turf.js
+            const areaStr =
+                area >= 1000000
+                    ? (area / 1000000).toFixed(2) + " km²"
+                    : area.toFixed(0) + " m²";
+
+            popupContent = `Area: <strong>${areaStr}</strong>`;
+        } catch (err) {
+            popupContent = "Polygon created";
+        }
+    }
+
+    if (popupContent) {
+        layer.bindPopup(popupContent).openPopup();
+    }
+
+    resetToolsAndButtons(); // keluar dari mode setelah selesai
 });
-L.control.download = function (opts) {
-    return new L.Control.Download(opts);
-};
-L.control.download({ position: "topleft" }).addTo(map);
 
 // Brightness
 // document.addEventListener("DOMContentLoaded", function () {
@@ -384,6 +495,11 @@ function interpolateMarker(marker, startPos, endPos, duration, updateIcon) {
     requestAnimationFrame(animate);
 }
 
+//close pop-up kanan
+function toggleRightPopupMenu() {
+    const popup = document.getElementById("rightPopupMenu");
+    popup.style.display = "none";
+}
 //simpan ke database
 let lastSaveTime = 0;
 
@@ -516,12 +632,6 @@ function updateFollowedList() {
     });
 }
 
-//close pop-up kanan
-function toggleRightPopupMenu() {
-    const popup = document.getElementById("rightPopupMenu");
-    popup.style.display = "none";
-}
-
 //reset follow
 function resetFollowedAircrafts() {
     // Hapus semua garis trail dari map
@@ -576,13 +686,13 @@ function saveFollowedAircrafts() {
                 console.error("❌ Gagal simpan ke DB:", error);
             });
     });
-
-    alert("Semua pesawat yang di-follow sudah dikirim ke database!");
 }
 
 document
     .getElementById("saveFollowedBtn")
-    .addEventListener("click", saveFollowedAircrafts);
+    .addEventListener("click", function (event) {
+        saveFollowedAircrafts(event.target.checked);
+    });
 
 socket.onopen = () => console.log("WebSocket terhubung");
 socket.onerror = (error) => console.error("WebSocket error:", error.message);

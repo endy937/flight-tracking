@@ -7,6 +7,8 @@ use App\Http\Controllers\AdminController;
 use App\Http\Controllers\FlightController;
 use App\Http\Controllers\UserController;
 use App\Http\Controllers\SaveAdsbController;
+use App\Http\Controllers\FlightLogImportController;
+
 
 Route::get('/', function () {
     return redirect()->route('login');
@@ -48,4 +50,9 @@ Route::middleware(['auth', 'user-access:admin'])->group(function () {
 Route::post('/follow-aircraft', [FlightController::class, 'store'])->name('follow-aircraft');
 Route::get('/admin/follow', [FlightController::class, 'index'])->name('follow_index');
 Route::delete('/admin/follow/{id}/delete', [FlightController::class, 'destroy'])->name('follow_delete');
+
+
+Route::get('/import-log/{filename}', [FlightLogImportController::class, 'import']);
+Route::get('/admin/logsave', [FlightLogImportController::class, 'index'])->name('logsave_index');
+Route::delete('/admin/logsave/{id}/delete', [FlightLogImportController::class, 'destroy'])->name('logsave_delete');
 

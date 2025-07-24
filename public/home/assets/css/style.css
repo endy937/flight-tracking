@@ -354,16 +354,6 @@ html {
     color: #ffcc00;
 }
 
-.custom-bottom-center {
-    position: absolute;
-    bottom: 20px;
-    left: 50%;
-    transform: translateX(-50%);
-    z-index: 1000;
-    display: flex;
-    gap: 10px;
-}
-
 #mapModeMenu .mode-option {
     padding: 5px 10px;
     transition: background 0.3s;
@@ -372,4 +362,88 @@ html {
 #mapModeMenu .mode-option:hover {
     background: rgba(255, 255, 255, 0.2);
     border-radius: 3px;
+}
+
+#custom-locate-btn {
+    position: absolute;
+    bottom: 22px;
+    right: 10px;
+    background: transparent;
+    border-radius: 50%;
+    width: 30px;
+    height: 30px;
+    cursor: pointer;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    z-index: 1000;
+}
+
+/* Tambahan visual untuk menunjukkan tombol aktif */
+#custom-locate-btn.active-locate {
+    background-color: #007bff;
+}
+
+#custom-locate-btn.active-locate svg {
+    fill: #fff;
+}
+
+#custom-toolbar {
+    position: absolute;
+    bottom: 20px;
+    left: 50%;
+    transform: translateX(-50%);
+    display: flex;
+    gap: 10px;
+    z-index: 1000;
+}
+
+.draw-btn {
+    width: 42px;
+    height: 42px;
+    background: transparent;
+    border-radius: 2px;
+    box-shadow: 0 2px 6px rgba(0, 0, 0, 0.3);
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    cursor: pointer;
+    transition: background-color 0.2s;
+    border: solid 1px;
+    border-color: gray;
+}
+
+.draw-btn:hover {
+    background-color: #f0f0f047;
+}
+
+.draw-btn svg {
+    width: 23px;
+    height: 23px;
+    stroke: white !important;
+    fill: white !important;
+}
+
+.draw-btn.active {
+    background-color: #f0f0f070;
+}
+
+.draw-btn.active svg {
+    fill: #fff;
+}
+
+.leaflet-popup-content-wrapper {
+    white-space: nowrap; /* jika ingin teks bisa ke baris baru */
+    max-width: none !important; /* batas lebar popup */
+    padding: 2px 5px; /* Padding agar popup tidak terlalu rapat */
+    font-size: 10px; /* Ukuran font agar nyaman dibaca */
+}
+
+.leaflet-popup-content {
+    margin: 0;
+    line-height: 1.2;
+}
+
+.leaflet-popup-tip {
+    display: none; /* (Opsional) sembunyikan segitiga kecil di popup bawah */
 }

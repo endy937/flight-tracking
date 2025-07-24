@@ -9,7 +9,7 @@ const MQTT_TOPIC = 'flightradar/filteredFlights';      // Topik
 const client = mqtt.connect(MQTT_BROKER);
 
 // Jalankan WebSocket Server
-const wss = new WebSocket.Server({ port: 8080 });
+const wss = new WebSocket.Server({ port: 8081 });
 
 // Sambungkan ke broker MQTT
 client.on('connect', () => {
