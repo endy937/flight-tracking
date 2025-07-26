@@ -41,6 +41,33 @@ async function getFilteredFlights(lat, lon, maxDistance) {
     }
 }
 
+// 🟩 Transformasi ke struktur per pesawat dengan track
+function transformToTrackFormat(flights, timestamp) {
+    const trackMap = {};
+
+    flights.forEach((flight) => {
+        const key = flight.icao24bit || flight.id;
+        if (!trackMap[key]) {
+            trackMap[key] = {
+                icao24bit: flight.icao24bit,
+                callsign: flight.callsign,
+                track: [],
+            };
+        }
+
+        trackMap[key].track.push({
+            timestamp,
+            latitude: flight.latitude,
+            longitude: flight.longitude,
+            altitude: flight.altitude,
+            speed: flight.groundSpeed,
+            heading: flight.heading,
+        });
+    });
+
+    return Object.values(trackMap);
+}
+
 let messageCounter = 0;
 let lat = -6.914744;
 let lon = 107.60981;
@@ -60,11 +87,11 @@ async function fetchAndSendFlights(client, topic, lat, lon, maxDistance) {
         messageCounter++;
 
         const now = new Date();
-        const localTimestamp = now.toLocaleString("sv-SE"); // format: YYYY-MM-DD HH:mm:ss (lokal)
+        const localTimestamp = now.toISOString();
 
         const message = JSON.stringify(filteredFlights);
 
-        // MQTT
+        // 🟢 MQTT
         client.publish(topic, message, { qos: 0 }, (error) => {
             if (error) {
                 console.error(
@@ -73,15 +100,18 @@ async function fetchAndSendFlights(client, topic, lat, lon, maxDistance) {
             }
         });
 
-        // WebSocket
+        // 🔵 WebSocket
         wss.clients.forEach((wsClient) => {
             if (wsClient.readyState === WebSocket.OPEN) {
                 wsClient.send(message);
             }
         });
 
-        // Simpan sementara ke buffer
-        flightDataBuffer.push(...filteredFlights);
+        // ⏺️ Simpan ke buffer
+        flightDataBuffer.push({
+            timestamp: localTimestamp,
+            flights: filteredFlights,
+        });
 
         console.log(
             `#${messageCounter} - ${localTimestamp} - Kirim ${filteredFlights.length} pesawat`
@@ -91,12 +121,12 @@ async function fetchAndSendFlights(client, topic, lat, lon, maxDistance) {
     }
 }
 
-// Simpan file setiap 5 menit
+// ⏱️ Setiap 5 menit, simpan file log per track
 setInterval(() => {
     if (flightDataBuffer.length === 0) return;
 
     const now = new Date();
-    const localTimestamp = now.toLocaleString("sv-SE"); // format lokal seperti ISO
+    const timestamp = now.toISOString();
 
     const year = now.getFullYear();
     const month = String(now.getMonth() + 1).padStart(2, "0");
@@ -114,37 +144,50 @@ setInterval(() => {
     const baseId = `${year}${month}${day}-${hour}${minute}${second}`;
     const logFilename = `Database_pesawat/flight_log_${baseId}.json`;
 
+    // Gabungkan track semua pesawat berdasarkan timestamp
+    const combined = {};
+    flightDataBuffer.forEach((entry) => {
+        entry.flights.forEach((flight) => {
+            const key = flight.icao24bit || flight.id;
+            if (!combined[key]) {
+                combined[key] = {
+                    icao24bit: flight.icao24bit,
+                    callsign: flight.callsign,
+                    track: [],
+                };
+            }
+            combined[key].track.push({
+                timestamp: entry.timestamp,
+                latitude: flight.latitude,
+                longitude: flight.longitude,
+                altitude: flight.altitude,
+                speed: flight.groundSpeed,
+                heading: flight.heading,
+            });
+        });
+    });
+
     const logEntry = {
         id: `log-${baseId}-0001`,
         tanggal,
-        timestamp: localTimestamp,
-        data: flightDataBuffer,
+        timestamp,
+        data: Object.values(combined),
     };
 
     fs.writeFileSync(logFilename, JSON.stringify([logEntry], null, 2));
-    console.log(
-        `📁 Log disimpan: ${logFilename} (${flightDataBuffer.length} entri pesawat)`
-    );
+    console.log(`📁 Log disimpan: ${logFilename}`);
 
-    // 🔁 Kirim ke Laravel
-    const filename = logFilename.split("/").pop();
     axios
-        .get(`http://127.0.0.1:8000/import-log/${filename}`)
-        .then((response) => {
-            console.log(`📦 Import ke Laravel: ${response.data.message}`);
-        })
-        .catch((error) => {
-            console.error(
-                `❌ Gagal import: ${
-                    error.response?.data?.error ||
-                    error.message ||
-                    "Unknown error"
-                }`
-            );
-        });
+        .get(`http://127.0.0.1:8000/import-log/${logFilename.split("/").pop()}`)
+        .then((res) =>
+            console.log("📦 Data dikirim ke Laravel:", res.data.message)
+        )
+        .catch((err) =>
+            console.error("❌ Kirim ke Laravel gagal:", err.message)
+        );
 
     flightDataBuffer = [];
-}, 5 * 60 * 1000); // 5 menit
+}, 5 * 60 * 1000);
 
 client.on("connect", () => {
     console.log("Connected to MQTT broker");
@@ -158,14 +201,8 @@ client.on("connect", () => {
 });
 
 client.on("message", (topic, message) => {
-    const mqttData = message.toString();
-    const trimmedData = mqttData.slice(1, -1);
+    const trimmedData = message.toString().slice(1, -1);
     const [latitude, longitude] = trimmedData.split("#");
     lat = latitude;
     lon = longitude;
 });
-
-client.on("error", (error) => console.error("MQTT error:", error));
-client.on("offline", () => console.warn("MQTT offline"));
-client.on("reconnect", () => console.log("MQTT reconnecting"));
-client.on("close", () => console.log("MQTT connection closed"));

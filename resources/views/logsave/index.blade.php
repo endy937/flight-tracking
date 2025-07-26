@@ -39,19 +39,25 @@
                                 </span>
                             </div>
                         </td>
-
-
                         <td class="border px-4 py-2">
                             <div class="flex justify-center items-center gap-5">
-                                <a href="{{ route('logsave_delete', $item->id) }}" data-confirm-delete="true">
+                                {{-- Tombol Hapus --}}
+                                <a href="{{ route('flightlog_delete', $item->id) }}" data-confirm-delete="true">
                                     <svg xmlns="http://www.w3.org/2000/svg" width="20" height="20"
                                         viewBox="0 0 24 24">
                                         <path fill="#000"
                                             d="M6 7H5v13a2 2 0 0 0 2 2h10a2 2 0 0 0 2-2V7zm4 12H8v-9h2zm6 0h-2v-9h2zm.618-15L15 2H9L7.382 4H3v2h18V4z" />
                                     </svg>
                                 </a>
+
+                                {{-- Tombol Lihat di Peta --}}
+                                <a href="{{ route('flightlog_show', $item->id) }}"
+                                    class="bg-blue-500 text-white px-3 py-1 rounded hover:bg-blue-600">
+                                    Lihat di Peta
+                                </a>
                             </div>
                         </td>
+
                     </tr>
                 @endforeach
             </tbody>

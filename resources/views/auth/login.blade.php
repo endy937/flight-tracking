@@ -58,8 +58,7 @@
                     class="w-full border border-green-400 text-green-400 px-3 py-2 rounded-md font-semibold hover:bg-green-400 hover:text-black transition">Sign
                     In</button>
                 <p class="text-sm text-gray-300 text-center">
-                    Don’t have an account yet? <a href="{{ route('register') }}"
-                        class="text-green-400 hover:underline">Sign up</a>
+
                 </p>
             </form>
         </div>

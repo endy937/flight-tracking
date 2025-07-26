@@ -11,9 +11,7 @@
             <div class="left-popup-menu" id="leftPopupMenuP">
                 <div class="popup-pesawat-header">
                     <h4>Aircraft Informasion</h4>
-
                     <button class="close-btn" onclick="toggleLeftPopupMenuP()">&times;</button>
-
                 </div>
                 <div class="popup-content-pesawat" id="popupContentP"></div>
                 <div class="popup-pesawat-footer">
@@ -49,8 +47,6 @@
             <div id="custom-locate-btn" title="Lokasi Saya">
                 <img src="{{ asset('home/assets/images/locate.png') }}" style="width: 70px; height: 70px;"
                     alt="geolocation">
-
-
             </div>
 
             <!-- Toolbar Custom di Bawah Tengah -->
@@ -123,20 +119,6 @@
 
         </div>
     </div>
-    <!-- Brightness Control di luar Leaflet -->
-
-    {{-- <div id="brightness-control">
-        <button id="toggle-brightness" title="Adjust Brightness">
-            <img src="{{ asset('home/assets/images/brightness.png') }}" alt="Brightness Icon" />
-        </button>
-        <div id="slider-wrapper">
-            <input type="range" id="brightness-slider" min="50" max="150" value="100" />
-        </div>
-    </div> --}}
-
-
-
-
 
     <!-- Map mode button -->
     <div id="mapModeBtn" class="leaflet-bar leaflet-control leaflet-control-custom"
@@ -154,24 +136,28 @@
         <div class="mode-option" data-mode="topographic">Topographic</div>
         <div class="mode-option" data-mode="hybrid">Hybrid</div>
     </div>
-
-    <!-- Fullscreen button -->
-    {{-- <div id="fullscreenBtn" class="leaflet-bar leaflet-control leaflet-control-custom"
-        style="bottom: 20px; right: 10px; position: absolute; z-index: 1000; cursor: pointer;">
-        <img id="fullscreenIcon" src="{{ asset('home/assets/images/full.png') }}" style="width: 30px; height: 30px;"
-            alt="Fullscreen">
-    </div> --}}
-
-    <!-- Save to DB checkbox -->
-    <div>
+    {{-- <div>
         <label
             style="position: absolute; top: 20px; right: 70px; z-index: 9999; background: rgba(255,255,255,0.7); padding: 5px 10px; border-radius: 8px;">
             <input type="checkbox" id="toggleSave" />
             Simpan ke Database
         </label>
+    </div> --}}
+    <!-- Modal -->
+    <div class="modal show" id="userModal" data-bs-backdrop="static" data-bs-keyboard="false" tabindex="-1"
+        style="display: none;">
+        <div class="modal-dialog modal-dialog-centered modal-sm">
+            <div class="modal-content custom-modal">
+                <div class="modal-body text-center">
+                    <p class="fs-5">Selamat datang, <strong>{{ Auth::user()->name ?? 'User' }}</strong></p>
+                    <div class="d-grid gap-2">
+                        <a href="{{ url('/logout') }}" class="btn btn-outline-danger">Sign out</a>
+                    </div>
+                </div>
+            </div>
+        </div>
     </div>
 
 
 
-    </div>
 @endsection

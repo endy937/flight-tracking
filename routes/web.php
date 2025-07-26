@@ -8,6 +8,7 @@ use App\Http\Controllers\FlightController;
 use App\Http\Controllers\UserController;
 use App\Http\Controllers\SaveAdsbController;
 use App\Http\Controllers\FlightLogImportController;
+use App\Http\Controllers\FlightLogViewController;
 
 
 Route::get('/', function () {
@@ -56,3 +57,5 @@ Route::get('/import-log/{filename}', [FlightLogImportController::class, 'import'
 Route::get('/admin/logsave', [FlightLogImportController::class, 'index'])->name('logsave_index');
 Route::delete('/admin/logsave/{id}/delete', [FlightLogImportController::class, 'destroy'])->name('logsave_delete');
 
+Route::get('/admin/flightlogs/{id}', [FlightLogViewController::class, 'show'])->name('flightlog_show');
+Route::get('/admin/flightlogs/{id}delete', [FlightLogViewController::class, 'destroy'])->name('flightlog_delete');

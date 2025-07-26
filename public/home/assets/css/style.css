@@ -211,14 +211,13 @@ html {
 .navbar .btn-icon-right {
     background: none;
     border: none;
-    padding: 0;
-    margin-left: 1rem;
+    margin-left: 10px; /* ubah dari 1rem ke 10px */
     cursor: pointer;
 }
-
 .navbar .btn-icon-right img {
     width: 30px;
     height: 30px;
+    margin-left: 10px; /* jika yang ingin diberi jarak adalah gambar */
 }
 
 /* Responsive adjustments */
@@ -366,7 +365,7 @@ html {
 
 #custom-locate-btn {
     position: absolute;
-    bottom: 22px;
+    bottom: 45px;
     right: 10px;
     background: transparent;
     border-radius: 50%;

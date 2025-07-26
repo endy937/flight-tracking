@@ -41,46 +41,6 @@ document.querySelectorAll("#mapModeMenu .mode-option").forEach((option) => {
 
 L.control.scale().addTo(map);
 
-// // Fullscreen button
-// const fullscreenBtn = document.getElementById("fullscreenBtn");
-// const fullscreenIcon = document.getElementById("fullscreenIcon");
-// const containerElement = document.getElementById("mapContainer");
-
-// fullscreenBtn.addEventListener("click", () => {
-//     if (
-//         !document.fullscreenElement &&
-//         !document.webkitFullscreenElement &&
-//         !document.msFullscreenElement
-//     ) {
-//         if (containerElement.requestFullscreen)
-//             containerElement.requestFullscreen();
-//         else if (containerElement.webkitRequestFullscreen)
-//             containerElement.webkitRequestFullscreen();
-//         else if (containerElement.msRequestFullscreen)
-//             containerElement.msRequestFullscreen();
-//     } else {
-//         if (document.exitFullscreen) document.exitFullscreen();
-//         else if (document.webkitExitFullscreen) document.webkitExitFullscreen();
-//         else if (document.msExitFullscreen) document.msExitFullscreen();
-//     }
-// });
-
-// document.addEventListener("fullscreenchange", () => {
-//     fullscreenIcon.src = document.fullscreenElement
-//         ? "{{ asset('home/assets/images/exit.png') }}"
-//         : "{{ asset('home/assets/images/full.png') }}";
-// });
-// document.addEventListener("webkitfullscreenchange", () => {
-//     fullscreenIcon.src = document.webkitFullscreenElement
-//         ? "{{ asset('home/assets/images/exit.png') }}"
-//         : "{{ asset('home/assets/images/full.png') }}";
-// });
-// document.addEventListener("msfullscreenchange", () => {
-//     fullscreenIcon.src = document.msFullscreenElement
-//         ? "{{ asset('home/assets/images/exit.png') }}"
-//         : "{{ asset('home/assets/images/full.png') }}";
-// });
-
 // Search
 document.getElementById("search-form").addEventListener("submit", function (e) {
     e.preventDefault();
@@ -286,25 +246,6 @@ map.on(L.Draw.Event.CREATED, function (e) {
     resetToolsAndButtons(); // keluar dari mode setelah selesai
 });
 
-// Brightness
-// document.addEventListener("DOMContentLoaded", function () {
-//     const toggleBtn = document.getElementById("toggle-brightness");
-//     const sliderWrapper = document.getElementById("slider-wrapper");
-//     const slider = document.getElementById("brightness-slider");
-
-//     toggleBtn.addEventListener("click", () => {
-//         sliderWrapper.style.display =
-//             sliderWrapper.style.display === "none" ? "block" : "none";
-//     });
-
-//     slider.addEventListener("input", (e) => {
-//         const value = e.target.value;
-//         document.querySelectorAll(".leaflet-tile").forEach((tile) => {
-//             tile.style.filter = `brightness(${value}%)`;
-//         });
-//     });
-// });
-
 // Map mode
 function setMapMode(mode) {
     if (currentBaseLayer) map.removeLayer(currentBaseLayer);
@@ -335,23 +276,6 @@ function togglePopup(id) {
 }
 const togglePopupMenu = () => togglePopup("popupMenu");
 const toggleLeftPopupMenuP = () => togglePopup("leftPopupMenuP");
-
-// Koordinat;
-// map.on("mousemove", function (e) {
-//     document.getElementById("coordinate").innerHTML =
-//         e.latlng.lat.toFixed(6) + ", " + e.latlng.lng.toFixed(6);
-// });
-
-// --- SIMPAN KE DATABASE LOGIC --- //
-let saveMode = false;
-const csrfToken = document
-    .querySelector('meta[name="csrf-token"]')
-    .getAttribute("content");
-
-document.getElementById("toggleSave").addEventListener("change", function () {
-    saveMode = this.checked;
-    console.log("Simpan ke Database:", saveMode);
-});
 
 const socket = new WebSocket("ws://127.0.0.1:8080");
 const markers = {};
@@ -527,32 +451,32 @@ socket.onmessage = (event) => {
         // Update list follow biar data koordinat real-time
         updateFollowedList();
 
-        if (saveMode && canSave && flightDataArray.length > 0) {
-            const firstFlight = flightDataArray[0];
-            fetch("/api/save-adsb", {
-                method: "POST",
-                headers: {
-                    "Content-Type": "application/json",
-                    "X-CSRF-TOKEN": csrfToken,
-                },
-                body: JSON.stringify({
-                    callsign: firstFlight.callsign,
-                    lat: firstFlight.latitude,
-                    lon: firstFlight.longitude,
-                    altitude: firstFlight.altitude,
-                    speed: firstFlight.groundSpeed,
-                    heading: firstFlight.heading,
-                }),
-            })
-                .then((res) => res.json())
-                .then((resp) => {
-                    console.log("✅ Data tersimpan:", resp);
-                    lastSaveTime = now;
-                })
-                .catch((error) => {
-                    console.error("Error saat simpan:", error);
-                });
-        }
+        // if (saveMode && canSave && flightDataArray.length > 0) {
+        //     const firstFlight = flightDataArray[0];
+        //     fetch("/api/save-adsb", {
+        //         method: "POST",
+        //         headers: {
+        //             "Content-Type": "application/json",
+        //             "X-CSRF-TOKEN": csrfToken,
+        //         },
+        //         body: JSON.stringify({
+        //             callsign: firstFlight.callsign,
+        //             lat: firstFlight.latitude,
+        //             lon: firstFlight.longitude,
+        //             altitude: firstFlight.altitude,
+        //             speed: firstFlight.groundSpeed,
+        //             heading: firstFlight.heading,
+        //         }),
+        //     })
+        //         .then((res) => res.json())
+        //         .then((resp) => {
+        //             console.log("✅ Data tersimpan:", resp);
+        //             lastSaveTime = now;
+        //         })
+        //         .catch((error) => {
+        //             console.error("Error saat simpan:", error);
+        //         });
+        // }
     } catch (error) {
         console.error("Kesalahan parsing:", error.message);
     }
@@ -652,6 +576,16 @@ function resetFollowedAircrafts() {
     console.log("Daftar pesawat di-follow sudah di-reset & garis dihapus.");
 }
 
+// --- SIMPAN KE DATABASE LOGIC --- //
+let saveMode = false;
+const csrfToken = document
+    .querySelector('meta[name="csrf-token"]')
+    .getAttribute("content");
+
+// document.getElementById("toggleSave").addEventListener("change", function () {
+//     saveMode = this.checked;
+//     console.log("Simpan ke Database:", saveMode);
+// });
 //save follow
 function saveFollowedAircrafts() {
     if (followedAircrafts.length === 0) {
@@ -693,6 +627,21 @@ document
     .addEventListener("click", function (event) {
         saveFollowedAircrafts(event.target.checked);
     });
+
+document.getElementById("userModal").style.display = "block";
+document.getElementById("userModal").classList.add("show");
+document.body.classList.add("modal-open");
+window.onload = () => {
+    const modal = document.getElementById("userModal");
+    modal.style.display = "block";
+    modal.classList.add("show");
+    document.body.classList.add("modal-open");
+
+    // Buat backdrop manual
+    const backdrop = document.createElement("div");
+    backdrop.className = "modal-backdrop show";
+    document.body.appendChild(backdrop);
+};
 
 socket.onopen = () => console.log("WebSocket terhubung");
 socket.onerror = (error) => console.error("WebSocket error:", error.message);
