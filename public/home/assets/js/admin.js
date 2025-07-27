@@ -248,3 +248,15 @@ ws.onmessage = function (event) {
     regionChart.update();
     speedExtremesChart.update();
 };
+
+document.querySelector("[data-menu]").addEventListener("click", function () {
+    const sidebar = document.getElementById("sidebar");
+    const texts = document.querySelectorAll(".menu-text");
+
+    sidebar.classList.toggle("w-64");
+    sidebar.classList.toggle("w-20");
+
+    texts.forEach((text) => {
+        text.classList.toggle("hidden");
+    });
+});

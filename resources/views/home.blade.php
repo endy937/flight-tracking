@@ -39,7 +39,7 @@
                 </template>
 
 
-                <button class="save-follow" id="saveFollowedBtn" style="margin-top: 10px;">Simpan ke Database</button>
+                <button class="save-follow" id="saveFollowedBtn" style="margin-top: 10px;">Simpan Following</button>
                 <button class="reset-follow-btn" onclick="resetFollowedAircrafts()">Reset</button>
 
             </div>
@@ -121,8 +121,7 @@
     </div>
 
     <!-- Map mode button -->
-    <div id="mapModeBtn" class="leaflet-bar leaflet-control leaflet-control-custom"
-        style="bottom: 50px; left: 10px; position: absolute; z-index: 1000;">
+    <div id="mapModeBtn" class="" style="bottom: 50px; left: 10px; position: absolute; z-index: 1000;">
         <img src="{{ asset('home/assets/images/layers.png') }}" style="width: 30px; height: 30px;" alt="Map Mode">
     </div>
 
@@ -144,20 +143,32 @@
         </label>
     </div> --}}
     <!-- Modal -->
-    <div class="modal show" id="userModal" data-bs-backdrop="static" data-bs-keyboard="false" tabindex="-1"
-        style="display: none;">
+    <div class="modal fade" id="userModal" tabindex="-1" aria-labelledby="userModalLabel" aria-hidden="true">
         <div class="modal-dialog modal-dialog-centered modal-sm">
-            <div class="modal-content custom-modal">
-                <div class="modal-body text-center">
-                    <p class="fs-5">Selamat datang, <strong>{{ Auth::user()->name ?? 'User' }}</strong></p>
+            <div class="modal-content"
+                style="background: transparent; border: solid 1px; color: white; border-color: gray; border-radius: 4px;">
+
+                <div class="modal-header justify-content-center flex-column text-center" style="border: none;">
+                    <!-- ICON USER -->
+                    <svg xmlns="http://www.w3.org/2000/svg" width="48" height="48" fill="white"
+                        viewBox="0 0 24 24" class="mb-2">
+                        <path
+                            d="M12 2a5 5 0 0 1 5 5a5 5 0 0 1-5 5a5 5 0 0 1-5-5a5 5 0 0 1 5-5zm0 12c3.33 0 10 1.67 10 5v1H2v-1c0-3.33 6.67-5 10-5z" />
+                    </svg>
+
+                    <!-- TEKS KOMANDAN -->
+                    <p class="mb-0">Komandan <strong>{{ Auth::user()->name ?? 'User' }}</strong></p>
+                </div>
+
+                <div class="modal-body text-center mt-0">
                     <div class="d-grid gap-2">
-                        <a href="{{ url('/logout') }}" class="btn btn-outline-danger">Sign out</a>
+                        <a href="{{ url('/logout') }}" class="btn btn-danger btn-sm border border-gray">Sign out</a>
                     </div>
                 </div>
+
             </div>
         </div>
     </div>
-
 
 
 @endsection

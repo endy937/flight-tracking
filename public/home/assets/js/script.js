@@ -365,25 +365,75 @@ function updatePopupContent(flightData) {
         callsign,
         airlineIcao,
     } = flightData;
+
     const timeString = new Date(time * 1000).toLocaleString();
+
     const popupContentP = `
-        <strong>Callsign:</strong> ${callsign}<br>
-        <strong>Airline ICAO:</strong> ${airlineIcao}<br>
-        <strong>Flight Number:</strong> ${number}<br>
-        <strong>Aircraft Code:</strong> ${aircraftCode}<br>
-        <strong>Registration:</strong> ${registration}<br>
-        <strong>Altitude:</strong> ${altitude} ft<br>
-        <strong>Speed:</strong> ${groundSpeed} knots<br>
-        <strong>Vertical Speed:</strong> ${verticalSpeed} ft/min<br>
-        <strong>Heading:</strong> ${heading}°<br>
-        <strong>Status:</strong> ${onGround ? "On Ground" : "In Flight"}<br>
-        <strong>Origin Airport:</strong> ${originAirportIata}<br>
-        <strong>Destination Airport:</strong> ${destinationAirportIata}<br>
-        <strong>Latitude:</strong> ${latitude}<br>
-        <strong>Longitude:</strong> ${longitude}<br>
-        <strong>ICAO 24-bit:</strong> ${icao24bit}<br>
-        <strong>Timestamp:</strong> ${timeString}
+        <div style="color: white; font-family: sans-serif; padding: 10px; border-radius: 2px; width: 100%; max-width: 280px; font-size: 11px;">
+
+            <!-- Judul -->
+            <h3 style="border-bottom: 1px solid #444; padding-bottom: 4px; margin-bottom: 6px; font-size: 13px;">Flight Details</h3>
+            
+            <!-- LAT / LONG -->
+            <div style="display: flex; justify-content: space-between; margin-bottom: 8px;">
+                <div style="background-color: rgb(44, 45, 45); width: 48%; text-align: center; border: 1px solid #555; padding: 4px; border-radius: 2px;">
+                    <div style="font-weight: bold;">Lat</div>
+                    <div>${latitude.toFixed(4)}</div>
+                </div>
+                <div style=" background-color: rgb(44, 45, 45); width: 48%; text-align: center; border: 1px solid #555; padding: 4px; border-radius: 2px;">
+                    <div style="font-weight: bold;">Long</div>
+                    <div>${longitude.toFixed(4)}</div>
+                </div>
+            </div>
+
+            <!-- Kotak Besar Isi 3 Baris -->
+            <div style="background-color: rgb(44, 45, 45); border: 1px solid #555; border-radius: 2px; padding: 8px; margin-bottom: 10px;">
+                <div style="display: flex; justify-content: space-between; margin-bottom: 4px;">
+                    <div><strong>Number:</strong> ${number || "-"}</div>
+                    <div><strong>Reg:</strong> ${registration || "-"}</div>
+                </div>
+                <div style="display: flex; justify-content: space-between; margin-bottom: 4px;">
+                    <div><strong>Callsign:</strong> ${callsign || "-"}</div>
+                    <div><strong>Country:</strong> Indonesia</div>
+                </div>
+                <div style="display: flex; justify-content: space-between;">
+                    <div><strong>Code:</strong> ${aircraftCode || "-"}</div>
+                    <div><strong>ICAO:</strong> ${icao24bit || "-"}</div>
+                </div>
+            </div>
+
+            <!-- Flight Info -->
+            <h4 style="border-bottom: 1px solid #444; padding: 4px 0; margin: 10px 0 6px; font-size: 12px;">Flight Information</h4>
+
+            <div style="display: flex; justify-content: space-between; margin-bottom: 4px;">
+                <div>Ground Speed</div>
+                <div>${groundSpeed} kts</div>
+            </div>
+            <div style="display: flex; justify-content: space-between; margin-bottom: 4px;">
+                <div>Track</div>
+                <div>${heading}°</div>
+            </div>
+            <div style="display: flex; justify-content: space-between; margin-bottom: 4px;">
+                <div>Altitude</div>
+                <div>${altitude} ft</div>
+            </div>
+            <div style="display: flex; justify-content: space-between; margin-bottom: 4px;">
+                <div>Vertical Speed</div>
+                <div>${verticalSpeed} ft/min</div>
+            </div>
+            <div style="display: flex; justify-content: space-between; margin-bottom: 4px;">
+                <div>Status</div>
+                <div>${onGround ? "On Ground" : "In Flight"}</div>
+            </div>
+            
+
+            <!-- Footer -->
+            <div style="border-top: 1px solid #444; padding-top: 6px; font-size: 10px; color: #ccc; margin-top: 8px;">
+                ${timeString}
+            </div>
+        </div>
     `;
+
     document.getElementById("popupContentP").innerHTML = popupContentP;
 }
 
@@ -593,7 +643,7 @@ function saveFollowedAircrafts() {
         return;
     }
 
-    followedAircrafts.forEach((aircraft) => {
+    const promises = followedAircrafts.map((aircraft) => {
         const body = JSON.stringify({
             callsign: aircraft.id,
             lat: aircraft.lat,
@@ -604,7 +654,7 @@ function saveFollowedAircrafts() {
 
         console.log("Request body:", body);
 
-        fetch("/follow-aircraft", {
+        return fetch("/follow-aircraft", {
             method: "POST",
             headers: {
                 "Content-Type": "application/json",
@@ -620,29 +670,35 @@ function saveFollowedAircrafts() {
                 console.error("❌ Gagal simpan ke DB:", error);
             });
     });
+
+    Promise.all(promises).then(() => {
+        alert("Pesawat yang di follow berhasil disimpan");
+    });
 }
 
 document
     .getElementById("saveFollowedBtn")
-    .addEventListener("click", function (event) {
-        saveFollowedAircrafts(event.target.checked);
+    .addEventListener("click", function () {
+        saveFollowedAircrafts();
     });
 
-document.getElementById("userModal").style.display = "block";
-document.getElementById("userModal").classList.add("show");
-document.body.classList.add("modal-open");
-window.onload = () => {
-    const modal = document.getElementById("userModal");
-    modal.style.display = "block";
-    modal.classList.add("show");
-    document.body.classList.add("modal-open");
+function updateTime() {
+    const now = new Date();
 
-    // Buat backdrop manual
-    const backdrop = document.createElement("div");
-    backdrop.className = "modal-backdrop show";
-    document.body.appendChild(backdrop);
-};
+    const options = {
+        hour: "2-digit",
+        minute: "2-digit",
+        second: "2-digit",
+        hour12: false,
+        timeZone: "Asia/Jakarta",
+    };
 
+    const timeString = now.toLocaleTimeString("id-ID", options);
+    document.getElementById("current-time").textContent = timeString + " WIB";
+}
+
+setInterval(updateTime, 1000);
+updateTime();
 socket.onopen = () => console.log("WebSocket terhubung");
 socket.onerror = (error) => console.error("WebSocket error:", error.message);
 socket.onclose = () => console.log("WebSocket ditutup");

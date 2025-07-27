@@ -52,10 +52,10 @@
 
                                 {{-- Tombol Lihat di Peta --}}
                                 <a href="{{ route('flightlog_show', $item->id) }}"
-                                    class="bg-blue-500 text-white px-3 py-1 rounded hover:bg-blue-600">
-                                    Lihat di Peta
+                                    class="bg-black text-white px-3 py-1 rounded hover:bg-blue-600 inline-flex items-center justify-center">
+                                    <i class="fas fa-play"></i>
                                 </a>
-                            </div>
+
                         </td>
 
                     </tr>

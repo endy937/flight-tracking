@@ -9,12 +9,12 @@
         </div>
         <div class="justify-between mb-5">
             <a href="{{ route('user_create') }}"
-                class="bg-blue-500 text-white px-2 py-1 rounded hover:bg-blue-600 m-5 ">Tambah</a>
+                class="bg-green-500 text-white px-2 py-1 rounded hover:bg-green-600 ">Tambah</a>
         </div>
         <table class="min-w-full border border-gray-200 text-sm text-left">
             <thead class="bg-gray-100 font-bold">
                 <tr>
-                    <th class="border px-4 py-2">Username</th>
+                    <th class="border px-4 py-2">Nama</th>
                     <th class="border px-4 py-2">Email</th>
                     <th class="border px-4 py-2">Role</th>
                     <th class="border px-4 py-2 text-center">Action</th>

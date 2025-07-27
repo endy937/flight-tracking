@@ -19,9 +19,8 @@ html {
     top: 30px;
     left: -320px;
     width: 250px;
-    height: 400px;
+    height: 445px;
     background-color: transparent;
-    box-shadow: 2px 0 5px rgba(0, 0, 0, 0.5);
     z-index: 2000;
     transition: all 0.3s ease;
     padding: 10px;
@@ -87,41 +86,6 @@ html {
 .leaflet-top.leaflet-left,
 .leaflet-top.leaflet-right {
     top: 70px !important;
-}
-
-#coordinate {
-    position: absolute;
-    bottom: 10px;
-    left: 10px;
-    color: white;
-    background: rgba(0, 0, 0, 0.5);
-    padding: 5px 10px;
-    border-radius: 2px;
-    font-size: 12px;
-}
-/* 
-#mapModeMenu .mode-option,
-#fullscreenMenu .fs-option {
-    padding: 4px 8px;
-    cursor: pointer;
-} */
-/* 
-#mapModeMenu .mode-option:hover,
-#fullscreenMenu .fs-option:hover {
-    background: rgba(255, 255, 255, 0.2);
-} */
-
-#fullscreenBtn:hover {
-    background: rgba(255, 255, 255, 0.2);
-}
-
-#fullscreenBtn {
-    z-index: 9999 !important;
-    pointer-events: auto !important;
-}
-
-#fullscreenBtn img {
-    pointer-events: auto !important;
 }
 
 #mapContainer {
@@ -224,7 +188,7 @@ html {
 @media (max-width: 768px) {
     .search-container {
         width: 150px;
-        top: 10px;
+        top: 15px;
         left: 10px;
     }
 
@@ -351,6 +315,35 @@ html {
 .follow-distance {
     font-weight: bold;
     color: #ffcc00;
+}
+
+.popup-pesawat-footer {
+    display: flex;
+    justify-content: center;
+    margin-top: 10px;
+}
+
+.follow-btn {
+    background-color: rgb(44, 45, 45);
+    color: white;
+    border: none;
+    border-radius: 2px;
+    padding: 6px 12px;
+    font-size: 12px;
+    font-weight: bold;
+    cursor: pointer;
+    transition: background-color 0.2s ease;
+    border-color: gray;
+    border: 1px solid rgba(255, 255, 255, 0.2);
+    width: 215px;
+}
+
+.follow-btn:hover {
+    background-color: rgba(46, 255, 81, 0.742);
+}
+
+.follow-btn:active {
+    transform: scale(0.97);
 }
 
 #mapModeMenu .mode-option {

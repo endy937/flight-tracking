@@ -58,4 +58,4 @@ Route::get('/admin/logsave', [FlightLogImportController::class, 'index'])->name(
 Route::delete('/admin/logsave/{id}/delete', [FlightLogImportController::class, 'destroy'])->name('logsave_delete');
 
 Route::get('/admin/flightlogs/{id}', [FlightLogViewController::class, 'show'])->name('flightlog_show');
-Route::get('/admin/flightlogs/{id}delete', [FlightLogViewController::class, 'destroy'])->name('flightlog_delete');
+Route::delete('/admin/flightlogs/{id}delete', [FlightLogViewController::class, 'destroy'])->name('flightlog_delete');
