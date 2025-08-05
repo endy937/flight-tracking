@@ -69,6 +69,7 @@ function transformToTrackFormat(flights, timestamp) {
 }
 
 let messageCounter = 0;
+let flightCountPer5Min = 0; // 🔵 Tambahan: Counter laporan 5 menit
 let lat = -6.914744;
 let lon = 107.60981;
 const maxDistance = 1000;
@@ -85,10 +86,10 @@ async function fetchAndSendFlights(client, topic, lat, lon, maxDistance) {
     try {
         const filteredFlights = await getFilteredFlights(lat, lon, maxDistance);
         messageCounter++;
+        flightCountPer5Min += filteredFlights.length; // ✅ Tambahkan ke counter
 
         const now = new Date();
         const localTimestamp = now.toISOString();
-
         const message = JSON.stringify(filteredFlights);
 
         // 🟢 MQTT
@@ -121,7 +122,7 @@ async function fetchAndSendFlights(client, topic, lat, lon, maxDistance) {
     }
 }
 
-// ⏱️ Setiap 5 menit, simpan file log per track
+// ⏱️ Setiap 5 menit, simpan file log per track + kirim laporan
 setInterval(() => {
     if (flightDataBuffer.length === 0) return;
 
@@ -186,6 +187,21 @@ setInterval(() => {
             console.error("❌ Kirim ke Laravel gagal:", err.message)
         );
 
+    // 🔴 Kirim laporan jumlah pesawat per 5 menit ke WebSocket
+    const reportPayload = {
+        type: "report_5min",
+        count: flightCountPer5Min,
+        timestamp: timestamp,
+    };
+
+    wss.clients.forEach((wsClient) => {
+        if (wsClient.readyState === WebSocket.OPEN) {
+            wsClient.send(JSON.stringify(reportPayload));
+        }
+    });
+
+    console.log(`📊 Jumlah data masuk 5 menit terakhir: ${flightCountPer5Min}`);
+    flightCountPer5Min = 0; // Reset counter
     flightDataBuffer = [];
 }, 5 * 60 * 1000);
 

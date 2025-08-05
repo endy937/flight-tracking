@@ -8,6 +8,10 @@ const speedData = [];
 const speedMaxData = [];
 const speedMinData = [];
 
+// 🔵 Tambahan untuk laporan 5 menit
+const reportLabels = [];
+const reportCounts = [];
+
 const headingGroups = {
     East: 0,
     South: 0,
@@ -22,11 +26,10 @@ const altitudeBins = {
     "20000+": 0,
 };
 
-// Helper to get context
+// Helper
 const ctx = (id) => document.getElementById(id)?.getContext("2d");
 
-// Inisialisasi semua chart (tidak diubah dari versi kamu)
-
+// Semua chart (termasuk yang baru)
 const aircraftCountChart = new Chart(ctx("aircraftCountChart"), {
     type: "line",
     data: {
@@ -40,10 +43,7 @@ const aircraftCountChart = new Chart(ctx("aircraftCountChart"), {
             },
         ],
     },
-    options: {
-        responsive: true,
-        maintainAspectRatio: false,
-    },
+    options: { responsive: true, maintainAspectRatio: false },
 });
 
 const avgAltitudeChart = new Chart(ctx("avgAltitudeChart"), {
@@ -153,30 +153,69 @@ const speedExtremesChart = new Chart(ctx("speedExtremesChart"), {
     },
 });
 
+// 🟩 Tambahan: Chart Laporan 5 Menit
+const fiveMinuteReportChart = new Chart(ctx("fiveMinuteReportChart"), {
+    type: "bar",
+    data: {
+        labels: reportLabels,
+        datasets: [
+            {
+                label: "Laporan Jumlah Pesawat Tiap 5 Menit",
+                data: reportCounts,
+                backgroundColor: "teal",
+            },
+        ],
+    },
+    options: {
+        responsive: true,
+        maintainAspectRatio: false,
+        scales: {
+            y: {
+                beginAtZero: true,
+                ticks: {
+                    stepSize: 5,
+                },
+            },
+        },
+    },
+});
+
 // WebSocket listener
 ws.onmessage = function (event) {
-    let flights;
+    let data;
     try {
-        flights = JSON.parse(event.data);
-        console.log("Data diterima:", flights);
+        data = JSON.parse(event.data);
     } catch (e) {
         console.error("❌ Gagal parsing data WebSocket:", e);
         return;
     }
 
-    if (!Array.isArray(flights)) {
-        console.warn("⚠️ Data bukan array:", flights);
+    // 🔍 Cek jika data adalah laporan 5 menit
+    if (data?.type === "report_5min") {
+        const waktu = new Date(data.timestamp).toLocaleTimeString();
+        reportLabels.push(waktu);
+        reportCounts.push(data.count);
+
+        // Batasi hanya 12 data terakhir
+        if (reportLabels.length > 12) {
+            reportLabels.shift();
+            reportCounts.shift();
+        }
+
+        fiveMinuteReportChart.update();
         return;
     }
 
+    // ✅ Proses data pesawat real-time
+    if (!Array.isArray(data)) return;
+
     const now = new Date().toLocaleTimeString();
-    const total = flights.length;
+    const total = data.length;
     const avgAltitude =
-        flights.reduce((sum, a) => sum + (a.altitude || 0), 0) / total;
-    const avgSpeed =
-        flights.reduce((sum, a) => sum + (a.speed || 0), 0) / total;
-    const maxSpeed = Math.max(...flights.map((f) => f.speed || 0));
-    const minSpeed = Math.min(...flights.map((f) => f.speed || 0));
+        data.reduce((sum, a) => sum + (a.altitude || 0), 0) / total;
+    const avgSpeed = data.reduce((sum, a) => sum + (a.speed || 0), 0) / total;
+    const maxSpeed = Math.max(...data.map((f) => f.speed || 0));
+    const minSpeed = Math.min(...data.map((f) => f.speed || 0));
 
     labels.push(now);
     countData.push(total);
@@ -194,20 +233,13 @@ ws.onmessage = function (event) {
         speedMinData.shift();
     }
 
-    // Reset count
+    // Maskapai, arah, ketinggian, wilayah
     const airlines = {};
-    const headingCount = {
-        East: 0,
-        South: 0,
-        West: 0,
-        North: 0,
-    };
-    const altitudeCount = {
-        ...altitudeBins,
-    };
+    const headingCount = { East: 0, South: 0, West: 0, North: 0 };
+    const altitudeCount = { ...altitudeBins };
     const region = {};
 
-    flights.forEach((f) => {
+    data.forEach((f) => {
         const name = f.operator || (f.callsign || "").substring(0, 3);
         airlines[name] = (airlines[name] || 0) + 1;
 
@@ -228,17 +260,16 @@ ws.onmessage = function (event) {
         region[area] = (region[area] || 0) + 1;
     });
 
+    // Update chart
     airlineChart.data.labels = Object.keys(airlines);
     airlineChart.data.datasets[0].data = Object.values(airlines);
 
     headingChart.data.datasets[0].data = Object.values(headingCount);
-
     altitudeChart.data.datasets[0].data = Object.values(altitudeCount);
 
     regionChart.data.labels = Object.keys(region);
     regionChart.data.datasets[0].data = Object.values(region);
 
-    // Update semua chart
     aircraftCountChart.update();
     avgAltitudeChart.update();
     avgSpeedChart.update();
@@ -249,6 +280,7 @@ ws.onmessage = function (event) {
     speedExtremesChart.update();
 };
 
+// Sidebar toggle
 document.querySelector("[data-menu]").addEventListener("click", function () {
     const sidebar = document.getElementById("sidebar");
     const texts = document.querySelectorAll(".menu-text");

@@ -12,7 +12,8 @@
     <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap-icons@1.3.0/font/bootstrap-icons.css">
 </head>
 
-<body class="min-h-screen h-full overflow-hidden">
+<body class="min-h-screen">
+
     <header class="px-4 py-2 shadow bg-black opacity-90">
         <div class="flex justify-between">
             <div class="flex items-center">
