@@ -7,10 +7,12 @@
     <div class="my-4 p-4 bg-blue-100 text-blue-900 rounded-lg shadow font-semibold text-lg" id="laporan-5menit">
         ⏳ Menunggu laporan data 5 menit...
     </div>
-    <div class="bg-white rounded-2xl shadow p-4 h-50 flex items-center justify-center">
-        <canvas id="fiveMinuteReportChart" class="w-full h-full" height="160"></canvas>
+    <div class="mt-6">
+        <h3 class="text-lg font-semibold mb-2">Laporan Pesawat Tiap 5 Menit</h3>
+        <div class="grid grid-cols-2 sm:grid-cols-3 md:grid-cols-4 gap-4" id="reportCards">
+            <!-- Kartu laporan akan diisi lewat JavaScript -->
+        </div>
     </div>
-
 
     <div class="container mx-auto py-4 px-2">
         <div class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 gap-4">

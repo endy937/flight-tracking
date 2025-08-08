@@ -8,10 +8,6 @@ const speedData = [];
 const speedMaxData = [];
 const speedMinData = [];
 
-// 🔵 Tambahan untuk laporan 5 menit
-const reportLabels = [];
-const reportCounts = [];
-
 const headingGroups = {
     East: 0,
     South: 0,
@@ -26,10 +22,12 @@ const altitudeBins = {
     "20000+": 0,
 };
 
+let latestFlightCount = 0;
+
 // Helper
 const ctx = (id) => document.getElementById(id)?.getContext("2d");
 
-// Semua chart (termasuk yang baru)
+// Semua chart
 const aircraftCountChart = new Chart(ctx("aircraftCountChart"), {
     type: "line",
     data: {
@@ -153,69 +151,32 @@ const speedExtremesChart = new Chart(ctx("speedExtremesChart"), {
     },
 });
 
-// 🟩 Tambahan: Chart Laporan 5 Menit
-const fiveMinuteReportChart = new Chart(ctx("fiveMinuteReportChart"), {
-    type: "bar",
-    data: {
-        labels: reportLabels,
-        datasets: [
-            {
-                label: "Laporan Jumlah Pesawat Tiap 5 Menit",
-                data: reportCounts,
-                backgroundColor: "teal",
-            },
-        ],
-    },
-    options: {
-        responsive: true,
-        maintainAspectRatio: false,
-        scales: {
-            y: {
-                beginAtZero: true,
-                ticks: {
-                    stepSize: 5,
-                },
-            },
-        },
-    },
-});
-
 // WebSocket listener
 ws.onmessage = function (event) {
-    let data;
+    let flights;
     try {
-        data = JSON.parse(event.data);
+        flights = JSON.parse(event.data);
+        console.log("Data diterima:", flights);
     } catch (e) {
         console.error("❌ Gagal parsing data WebSocket:", e);
         return;
     }
 
-    // 🔍 Cek jika data adalah laporan 5 menit
-    if (data?.type === "report_5min") {
-        const waktu = new Date(data.timestamp).toLocaleTimeString();
-        reportLabels.push(waktu);
-        reportCounts.push(data.count);
-
-        // Batasi hanya 12 data terakhir
-        if (reportLabels.length > 12) {
-            reportLabels.shift();
-            reportCounts.shift();
-        }
-
-        fiveMinuteReportChart.update();
+    if (!Array.isArray(flights)) {
+        console.warn("⚠️ Data bukan array:", flights);
         return;
     }
 
-    // ✅ Proses data pesawat real-time
-    if (!Array.isArray(data)) return;
-
     const now = new Date().toLocaleTimeString();
-    const total = data.length;
+    const total = flights.length;
+    latestFlightCount = total;
+
     const avgAltitude =
-        data.reduce((sum, a) => sum + (a.altitude || 0), 0) / total;
-    const avgSpeed = data.reduce((sum, a) => sum + (a.speed || 0), 0) / total;
-    const maxSpeed = Math.max(...data.map((f) => f.speed || 0));
-    const minSpeed = Math.min(...data.map((f) => f.speed || 0));
+        flights.reduce((sum, a) => sum + (a.altitude || 0), 0) / total;
+    const avgSpeed =
+        flights.reduce((sum, a) => sum + (a.speed || 0), 0) / total;
+    const maxSpeed = Math.max(...flights.map((f) => f.speed || 0));
+    const minSpeed = Math.min(...flights.map((f) => f.speed || 0));
 
     labels.push(now);
     countData.push(total);
@@ -233,13 +194,12 @@ ws.onmessage = function (event) {
         speedMinData.shift();
     }
 
-    // Maskapai, arah, ketinggian, wilayah
     const airlines = {};
     const headingCount = { East: 0, South: 0, West: 0, North: 0 };
     const altitudeCount = { ...altitudeBins };
     const region = {};
 
-    data.forEach((f) => {
+    flights.forEach((f) => {
         const name = f.operator || (f.callsign || "").substring(0, 3);
         airlines[name] = (airlines[name] || 0) + 1;
 
@@ -260,13 +220,11 @@ ws.onmessage = function (event) {
         region[area] = (region[area] || 0) + 1;
     });
 
-    // Update chart
     airlineChart.data.labels = Object.keys(airlines);
     airlineChart.data.datasets[0].data = Object.values(airlines);
 
     headingChart.data.datasets[0].data = Object.values(headingCount);
     altitudeChart.data.datasets[0].data = Object.values(altitudeCount);
-
     regionChart.data.labels = Object.keys(region);
     regionChart.data.datasets[0].data = Object.values(region);
 
@@ -279,6 +237,30 @@ ws.onmessage = function (event) {
     regionChart.update();
     speedExtremesChart.update();
 };
+
+// Fungsi untuk menambahkan stat card
+function addReportCard(waktu, jumlah) {
+    const card = document.createElement("div");
+    card.className = "bg-white rounded-lg shadow p-4 text-center";
+    card.innerHTML = `
+        <div class="text-sm text-gray-500">${waktu}</div>
+        <div class="text-xl font-bold">${jumlah} Pesawat</div>
+    `;
+
+    const container = document.getElementById("reportCards");
+    container.prepend(card); // Tambahkan paling depan
+
+    if (container.children.length > 12) {
+        container.removeChild(container.lastChild); // Hapus yang paling lama
+    }
+}
+
+// Setiap 5 menit, buat laporan dalam bentuk kartu
+setInterval(() => {
+    const now = new Date();
+    const timeString = now.toLocaleTimeString();
+    addReportCard(timeString, latestFlightCount);
+}, 5 * 60 * 1000);
 
 // Sidebar toggle
 document.querySelector("[data-menu]").addEventListener("click", function () {
