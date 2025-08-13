@@ -42,11 +42,11 @@
         </div>
     </header>
 
-    <div class="flex flex-row min-h-screen">
+    <div class="flex flex-row min-h-screen h-screen">
+        <!-- Sidebar -->
         <div id="sidebar"
-            class="flex flex-col w-64 transition-all duration-300 h-screen overflow-y-auto bg-black opacity-90 border-r dark:bg-gray-900 dark:border-gray-700">
+            class="flex flex-col w-64 h-full bg-black opacity-90 border-r dark:bg-gray-900 dark:border-gray-700">
             <div class="sidebar text-center bg-black opacity-90">
-
                 <a href="{{ route('admin/home') }}">
                     <div
                         class="p-2.5 mt-3 flex items-center rounded-md px-4 duration-300 cursor-pointer hover:bg-green-400 text-white">
@@ -75,7 +75,7 @@
                     <div
                         class="p-2.5 mt-3 flex items-center rounded-md px-4 duration-300 cursor-pointer hover:bg-green-400 text-white">
                         <i class="bi bi-bookmark-fill"></i>
-                        <span class="menu-text text-[15px] ml-4 text-gray-200 font-bold">log Json</span>
+                        <span class="menu-text text-[15px] ml-4 text-gray-200 font-bold">Log JSON</span>
                     </div>
                 </a>
 
@@ -90,12 +90,13 @@
             </div>
         </div>
 
-        <div class="flex flex-col w-full px-4 py-8">
+        <!-- Konten utama -->
+        <div class="flex flex-col w-full px-4 py-8 overflow-auto">
             <div>@yield('contents')</div>
         </div>
     </div>
 
-    <footer class="bg-black text-white py-4 mt-auto">
+    <footer class="bg-black  opacity-90 text-white dark:bg-gray-900 dark:border-gray-700 py-4 mt-auto">
         <div class="text-center">
             <p class="text-sm">&copy; 2025 Flight Tracking Admin. All rights reserved.</p>
         </div>

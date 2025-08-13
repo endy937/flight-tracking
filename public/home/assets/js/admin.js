@@ -23,6 +23,7 @@ const altitudeBins = {
 };
 
 let latestFlightCount = 0;
+let lastUpdated = 0; // Menyimpan waktu pembaruan terakhir tabel dalam timestamp
 
 // Helper
 const ctx = (id) => document.getElementById(id)?.getContext("2d");
@@ -151,6 +152,77 @@ const speedExtremesChart = new Chart(ctx("speedExtremesChart"), {
     },
 });
 
+// Fungsi untuk menambahkan stat card ke container dan simpan ke localStorage
+function addReportCard(waktu, jumlah, save = true) {
+    const card = document.createElement("div");
+    card.className = "bg-white rounded-lg shadow p-4 text-center";
+    card.innerHTML = `
+    <div class="text-sm text-gray-500">${waktu}</div>
+    <div class="text-xl font-bold">${jumlah} Pesawat</div>
+  `;
+
+    const container = document.getElementById("reportCards");
+    container.prepend(card); // Tambahkan paling depan
+
+    if (container.children.length > 12) {
+        container.removeChild(container.lastChild); // Hapus yang paling lama
+    }
+
+    if (save) {
+        // Ambil semua kartu sekarang untuk disimpan
+        const cards = [];
+        container.querySelectorAll("div.bg-white").forEach((c) => {
+            cards.push({
+                waktu: c.querySelector("div.text-sm")?.textContent || "",
+                jumlah:
+                    c
+                        .querySelector("div.text-xl")
+                        ?.textContent.replace(" Pesawat", "") || "0",
+            });
+        });
+        localStorage.setItem("flightReportCards", JSON.stringify(cards));
+    }
+}
+
+// Load data kartu dari localStorage saat halaman dibuka
+window.addEventListener("DOMContentLoaded", () => {
+    const savedCards = localStorage.getItem("flightReportCards");
+    if (savedCards) {
+        try {
+            const cards = JSON.parse(savedCards);
+            cards.reverse().forEach(({ waktu, jumlah }) => {
+                addReportCard(waktu, jumlah, false); // false supaya tidak double simpan
+            });
+        } catch (e) {
+            console.warn("Gagal memuat data kartu dari localStorage:", e);
+        }
+    }
+});
+
+// Fungsi update tabel ringkasan jumlah pesawat per waktu
+function updateSummaryTable(dateTime, count) {
+    const tbody = document.getElementById("summaryTableBody");
+    if (!tbody) return;
+
+    const date = dateTime.toLocaleDateString();
+    const time = dateTime.toLocaleTimeString();
+
+    const row = document.createElement("tr");
+    row.innerHTML = `
+    <td class="border px-2 py-1">${date}</td>
+    <td class="border px-2 py-1">${time}</td>
+    <td class="border px-2 py-1 text-center">${count}</td>
+  `;
+
+    // Tambahkan paling atas
+    tbody.prepend(row);
+
+    // Hapus baris lebih dari 12
+    while (tbody.rows.length > 12) {
+        tbody.deleteRow(tbody.rows.length - 1);
+    }
+}
+
 // WebSocket listener
 ws.onmessage = function (event) {
     let flights;
@@ -167,9 +239,32 @@ ws.onmessage = function (event) {
         return;
     }
 
-    const now = new Date().toLocaleTimeString();
+    const now = new Date();
     const total = flights.length;
     latestFlightCount = total;
+
+    // Sidebar toggle
+    document
+        .querySelector("[data-menu]")
+        .addEventListener("click", function () {
+            const sidebar = document.getElementById("sidebar");
+            const texts = document.querySelectorAll(".menu-text");
+
+            sidebar.classList.toggle("w-64");
+            sidebar.classList.toggle("w-20");
+
+            texts.forEach((text) => {
+                text.classList.toggle("hidden");
+            });
+        });
+
+    // Update tabel ringkasan hanya jika 5 menit sudah berlalu
+    const currentTime = now.getTime(); // Mendapatkan waktu sekarang dalam milidetik
+    if (currentTime - lastUpdated >= 5 * 60 * 1000) {
+        // Jika sudah 5 menit
+        updateSummaryTable(now, total);
+        lastUpdated = currentTime; // Update waktu pembaruan terakhir
+    }
 
     const avgAltitude =
         flights.reduce((sum, a) => sum + (a.altitude || 0), 0) / total;
@@ -178,7 +273,7 @@ ws.onmessage = function (event) {
     const maxSpeed = Math.max(...flights.map((f) => f.speed || 0));
     const minSpeed = Math.min(...flights.map((f) => f.speed || 0));
 
-    labels.push(now);
+    labels.push(now.toLocaleTimeString());
     countData.push(total);
     altitudeData.push(avgAltitude.toFixed(2));
     speedData.push(avgSpeed.toFixed(2));
@@ -238,39 +333,9 @@ ws.onmessage = function (event) {
     speedExtremesChart.update();
 };
 
-// Fungsi untuk menambahkan stat card
-function addReportCard(waktu, jumlah) {
-    const card = document.createElement("div");
-    card.className = "bg-white rounded-lg shadow p-4 text-center";
-    card.innerHTML = `
-        <div class="text-sm text-gray-500">${waktu}</div>
-        <div class="text-xl font-bold">${jumlah} Pesawat</div>
-    `;
-
-    const container = document.getElementById("reportCards");
-    container.prepend(card); // Tambahkan paling depan
-
-    if (container.children.length > 12) {
-        container.removeChild(container.lastChild); // Hapus yang paling lama
-    }
-}
-
-// Setiap 5 menit, buat laporan dalam bentuk kartu
+// Setiap 5 menit, buat laporan dalam bentuk kartu dan simpan
 setInterval(() => {
     const now = new Date();
     const timeString = now.toLocaleTimeString();
     addReportCard(timeString, latestFlightCount);
 }, 5 * 60 * 1000);
-
-// Sidebar toggle
-document.querySelector("[data-menu]").addEventListener("click", function () {
-    const sidebar = document.getElementById("sidebar");
-    const texts = document.querySelectorAll(".menu-text");
-
-    sidebar.classList.toggle("w-64");
-    sidebar.classList.toggle("w-20");
-
-    texts.forEach((text) => {
-        text.classList.toggle("hidden");
-    });
-});
