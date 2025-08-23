@@ -7,7 +7,6 @@ use GuzzleHttp\RetryMiddleware;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Auth;
 use RealRashid\SweetAlert\Facades\Alert;
-
 use function Ramsey\Uuid\v1;
 
 class UserController extends Controller

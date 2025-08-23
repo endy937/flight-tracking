@@ -3,7 +3,6 @@
 use Illuminate\Support\Facades\Route;
 use App\Http\Controllers\AuthController;
 use App\Http\Controllers\HomeController;
-use App\Http\Controllers\AdminController;
 use App\Http\Controllers\FlightController;
 use App\Http\Controllers\UserController;
 use App\Http\Controllers\SaveAdsbController;
@@ -16,8 +15,8 @@ Route::get('/', function () {
 });
 
 Route::controller(AuthController::class)->group(function () {
-    Route::get('register', 'register')->name('register');
-    Route::post('register', 'registerSave')->name('register.save');
+    // Route::get('register', 'register')->name('register');
+    // Route::post('register', 'registerSave')->name('register.save');
 
     Route::get('/login', 'login')->name('login');
     Route::post('login', 'loginAction')->name('login.action');
@@ -34,7 +33,6 @@ Route::middleware(['auth', 'user-access:user'])->group(function () {
 //Admin Routes List
 Route::middleware(['auth', 'user-access:admin'])->group(function () {
     Route::get('/admin/home', [HomeController::class, 'adminHome'])->name('admin/home');
-    Route::get('/admin/profile', [AdminController::class, 'profilepage'])->name('admin/profile');
 
     Route::get('/admin/user', [UserController::class, 'index'])->name('user_index');
     Route::get('/admin/user/{id}', [UserController::class, 'edit'])->name('user_edit');
