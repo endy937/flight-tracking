@@ -15,7 +15,7 @@
             background-color: rgba(0, 0, 0, 0.7); background-blend-mode: darken; background-size: cover; background-position: center;">
             <div
                 class="w-full max-w-xs bg-white bg-opacity-5 backdrop-blur-lg rounded-xl shadow-xl p-6 border border-white/20">
-                <h1 class="text-3xl font-bold text-white mb-2 text-center">Sign In</h1>
+                <h1 class="text-3xl font-bold text-green-400 mb-2 text-center">Sign In</h1>
                 <p class="text-gray-300 text-center mb-5 text-sm">For your protection, please verify your identity.</p>
                 <form class="space-y-4" method="post" action="{{ route('login.action') }}">
                     @csrf
@@ -31,14 +31,13 @@
                         </div>
                     @endif
                     <div>
-                        <label for="email" class="block mb-1 text-sm font-medium text-gray-300">Email Address
-                            *</label>
+                        <label for="email" class="block mb-1 text-sm font-medium text-gray-300">Email Address</label>
                         <input type="email" name="email" id="email"
                             class="bg-transparent border border-gray-400 text-gray-200 text-sm rounded-md focus:ring-green-400 focus:border-green-400 block w-full p-2.5"
                             required>
                     </div>
                     <div>
-                        <label for="password" class="block mb-1 text-sm font-medium text-gray-300">Password *</label>
+                        <label for="password" class="block mb-1 text-sm font-medium text-gray-300">Password</label>
                         <input type="password" name="password" id="password"
                             class="bg-transparent border border-gray-400 text-gray-200 text-sm rounded-md focus:ring-green-400 focus:border-green-400 block w-full p-2.5"
                             required>
