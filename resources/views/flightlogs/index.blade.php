@@ -23,15 +23,23 @@
             bottom: 20px;
             left: 50%;
             transform: translateX(-50%);
-            background: rgba(255, 255, 255, 0.95);
+            background: transparent;
+            /* 💡 transparan */
             padding: 10px 20px;
-            border-radius: 8px;
+            border-radius: 4px;
             display: flex;
             align-items: center;
             gap: 10px;
             z-index: 999;
-            box-shadow: 0 2px 6px rgba(0, 0, 0, 0.3);
+            box-shadow: 0 2px 6px rgba(0, 0, 0, 0.2);
+            backdrop-filter: blur(6px);
+            border:
+                solid 1px;
+            border-color: gray;
+            color: #ddd;
+            /* 💡 efek kaca buram */
         }
+
 
         .map-mode {
             position: absolute;
