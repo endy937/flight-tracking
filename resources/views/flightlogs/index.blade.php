@@ -164,7 +164,6 @@
         const map = L.map('map', {
             zoomControl: false
         }).setView([-6.1751, 106.865], 9);
-
         const baseLayers = {
             streets: L.tileLayer("https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png"),
             satellite: L.tileLayer(
